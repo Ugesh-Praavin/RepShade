@@ -147,7 +147,7 @@ export function verifyOtpCode(email: string, code: string): { success: boolean; 
 
 // HTTP Server handling REST requests
 export function createOtpServer() {
-  return http.createServer(async (req, res) => {
+  return http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
     // Enable CORS for mobile app & web requests
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -172,7 +172,7 @@ export function createOtpServer() {
     const readBody = (): Promise<any> =>
       new Promise((resolve) => {
         let data = '';
-        req.on('data', (chunk) => (data += chunk));
+        req.on('data', (chunk: any) => (data += chunk));
         req.on('end', () => {
           try {
             resolve(JSON.parse(data));

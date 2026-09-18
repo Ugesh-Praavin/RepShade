@@ -7,7 +7,7 @@ module.exports = {
       {
         tsconfig: {
           strict: true,
-          types: ['jest'],
+          types: ['jest', 'node'],
         },
       },
     ],
