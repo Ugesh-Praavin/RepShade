@@ -43,11 +43,25 @@ Repshade/
 
 3. **Start Development Bundler**:
    ```bash
-   npm start
+   # Standard start
+   npx expo start
+
+   # Clear cache on start
+   npx expo start --clear
    ```
 
-4. **Available Commands**:
-   - `npm run android`: Run on connected Android device or emulator.
+4. **Build Android Release APK**:
+   ```bash
+   cd android
+   .\gradlew --version
+   .\gradlew assembleRelease
+   ```
+
+5. **Available NPM Commands**:
+   - `npm start`: Start Expo dev server.
+   - `npm run start:clear`: Start Expo server with clean cache (`npx expo start --clear`).
+   - `npm run android`: Run on connected Android device/emulator.
+   - `npm run build:android-apk`: Compile Android release APK via Gradle.
    - `npm run ios`: Run on iOS simulator (macOS required).
    - `npm run web`: Run in web browser preview.
    - `npm run lint`: Run ESLint checks.

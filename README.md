@@ -87,13 +87,33 @@ If you complete **Push** and don't work out for two days, RepShade remembers you
 
 4. **Start the Development Bundler**:
    ```bash
-   npm start
+   # Standard start
+   npx expo start
+
+   # Start with clean cache (recommended after dependency changes)
+   npx expo start --clear
    ```
 
 5. **Run on Emulator / Device**:
    - Press `a` to launch on **Android Emulator**.
    - Press `i` to launch on **iOS Simulator** (macOS required).
    - Scan the terminal QR code with **Expo Go** on your mobile device.
+
+### 📦 Building Standalone Android Release APK
+
+To compile a production Release APK directly via Gradle:
+
+```bash
+cd Repshade/android
+
+# Check Gradle configuration
+.\gradlew --version
+
+# Build Release APK
+.\gradlew assembleRelease
+```
+The compiled APK will be located at:
+`Repshade/android/app/build/outputs/apk/release/app-release.apk`
 
 ---
 
