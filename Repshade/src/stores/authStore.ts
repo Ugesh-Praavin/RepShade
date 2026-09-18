@@ -1,5 +1,13 @@
 import { create } from 'zustand';
 import { authService, AuthUser } from '../services/authService';
+import { userRepository } from '../repositories/userRepository';
+
+export const GUEST_USER: AuthUser = {
+  uid: 'local_user',
+  email: 'guest@gmail.com',
+  displayName: 'user',
+  photoURL: null,
+};
 
 export interface AuthStoreState {
   user: AuthUser | null;
@@ -10,26 +18,54 @@ export interface AuthStoreState {
 
   // Actions
   initializeAuth: () => () => void;
+  continueAsGuest: () => void;
   signIn: (email: string, pass: string) => Promise<AuthUser>;
   signUp: (email: string, pass: string, displayName?: string) => Promise<AuthUser>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updateProfilePhoto: (photoURL: string | null) => Promise<void>;
   clearError: () => void;
 }
 
 export const useAuthStore = create<AuthStoreState>((set) => ({
-  user: null,
+  user: GUEST_USER,
   isAuthenticated: false,
   isInitializing: true,
   isLoading: false,
   error: null,
 
+  continueAsGuest: () => {
+    set({
+      user: GUEST_USER,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+    });
+  },
+
   initializeAuth: () => {
     set({ isInitializing: true });
     // Listen to Firebase Auth state
-    const unsubscribe = authService.subscribeToAuth((user) => {
+    const unsubscribe = authService.subscribeToAuth(async (user) => {
+      let resolvedUser = user;
+      if (!resolvedUser) {
+        try {
+          const localGuest = await userRepository.getUser('local_user');
+          if (localGuest && localGuest.photo_url) {
+            resolvedUser = {
+              ...GUEST_USER,
+              photoURL: localGuest.photo_url,
+            };
+          } else {
+            resolvedUser = GUEST_USER;
+          }
+        } catch {
+          resolvedUser = GUEST_USER;
+        }
+      }
+
       set({
-        user,
+        user: resolvedUser,
         isAuthenticated: !!user,
         isInitializing: false,
         isLoading: false,
@@ -82,7 +118,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
     set({ isLoading: true });
     try {
       await authService.signOut();
-      set({ user: null, isAuthenticated: false, isLoading: false, error: null });
+      set({ user: GUEST_USER, isAuthenticated: false, isLoading: false, error: null });
     } catch (err: any) {
       set({ error: err?.message || 'Failed to sign out', isLoading: false });
     }
@@ -95,6 +131,18 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
       set({ isLoading: false });
     } catch (err: any) {
       set({ error: err?.message || 'Failed to send reset email', isLoading: false });
+      throw err;
+    }
+  },
+
+  updateProfilePhoto: async (photoURL: string | null) => {
+    try {
+      await authService.updateProfilePhoto(photoURL);
+      set((state) => ({
+        user: state.user ? { ...state.user, photoURL } : null,
+      }));
+    } catch (err: any) {
+      set({ error: err?.message || 'Failed to update profile avatar' });
       throw err;
     }
   },

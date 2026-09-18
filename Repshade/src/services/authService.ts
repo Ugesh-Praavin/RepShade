@@ -28,8 +28,8 @@ export const authService = {
       if (firebaseUser) {
         const authUser: AuthUser = {
           uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
+          email: firebaseUser.email || 'user@gmail.com',
+          displayName: firebaseUser.displayName || 'user',
           photoURL: firebaseUser.photoURL,
         };
 
@@ -37,7 +37,7 @@ export const authService = {
         try {
           await userRepository.upsertUser({
             id: authUser.uid,
-            email: authUser.email || '',
+            email: authUser.email || 'user@gmail.com',
             displayName: authUser.displayName,
             photoUrl: authUser.photoURL,
           });
@@ -46,13 +46,11 @@ export const authService = {
           console.error('Error caching user to local SQLite:', err);
         }
 
-        // Sync to Firestore in background
+        // Sync to Firestore in background & migrate any existing guest data
         syncService.syncUserProfile(authUser).catch((e) => {
           console.warn('Background sync user to Firestore error:', e);
         });
-
-        // Trigger background processing of any pending offline operations
-        syncService.processPendingQueue(authUser.uid).catch(() => {});
+        syncService.syncAllLocalDataToFirestore(authUser.uid).catch(() => {});
 
         callback(authUser);
       } else {
@@ -69,20 +67,24 @@ export const authService = {
     const u = cred.user;
     const authUser: AuthUser = {
       uid: u.uid,
-      email: u.email,
-      displayName: u.displayName,
+      email: u.email || 'user@gmail.com',
+      displayName: u.displayName || 'user',
       photoURL: u.photoURL,
     };
 
     // Cache locally & sync to Firestore
     await userRepository.upsertUser({
       id: authUser.uid,
-      email: authUser.email || '',
+      email: authUser.email || 'user@gmail.com',
       displayName: authUser.displayName,
       photoUrl: authUser.photoURL,
     });
     await syncService.syncUserProfile(authUser);
-    syncService.processPendingQueue(authUser.uid).catch(() => {});
+    
+    // Automatically migrate any previous guest workouts & sync everything to Firestore!
+    syncService.syncAllLocalDataToFirestore(authUser.uid).catch((err) => {
+      console.warn('Background cloud sync on signIn failed:', err);
+    });
 
     return authUser;
   },
@@ -94,21 +96,22 @@ export const authService = {
     const cred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
     const u = cred.user;
 
-    if (displayName?.trim()) {
-      await updateProfile(u, { displayName: displayName.trim() });
+    const resolvedName = displayName?.trim() || u.displayName || 'user';
+    if (resolvedName) {
+      await updateProfile(u, { displayName: resolvedName });
     }
 
     const authUser: AuthUser = {
       uid: u.uid,
-      email: u.email,
-      displayName: displayName?.trim() || u.displayName,
+      email: u.email || 'user@gmail.com',
+      displayName: resolvedName,
       photoURL: u.photoURL,
     };
 
     // Save to local SQLite
     await userRepository.upsertUser({
       id: authUser.uid,
-      email: authUser.email || '',
+      email: authUser.email || 'user@gmail.com',
       displayName: authUser.displayName,
       photoUrl: authUser.photoURL,
     });
@@ -125,6 +128,11 @@ export const authService = {
       show_rir: 0,
       theme: 'dark',
       workout_reminders_enabled: 1,
+    });
+
+    // Automatically migrate any previous guest workouts & sync everything to Firestore!
+    syncService.syncAllLocalDataToFirestore(authUser.uid).catch((err) => {
+      console.warn('Background cloud sync on signUp failed:', err);
     });
 
     return authUser;
@@ -156,5 +164,34 @@ export const authService = {
       displayName: u.displayName,
       photoURL: u.photoURL,
     };
+  },
+
+  /**
+   * Update Profile Photo (for both authenticated athletes and local guest athletes)
+   */
+  async updateProfilePhoto(photoURL: string | null): Promise<void> {
+    const u = auth.currentUser;
+    if (u) {
+      await updateProfile(u, { photoURL });
+      await userRepository.upsertUser({
+        id: u.uid,
+        email: u.email || 'user@gmail.com',
+        displayName: u.displayName || 'user',
+        photoUrl: photoURL,
+      });
+      await syncService.syncUserProfile({
+        uid: u.uid,
+        email: u.email || 'user@gmail.com',
+        displayName: u.displayName || 'user',
+        photoURL,
+      });
+    } else {
+      await userRepository.upsertUser({
+        id: 'local_user',
+        email: 'guest@gmail.com',
+        displayName: 'user',
+        photoUrl: photoURL,
+      });
+    }
   },
 };

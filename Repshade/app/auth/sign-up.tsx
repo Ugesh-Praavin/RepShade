@@ -100,7 +100,7 @@ export default function SignUpScreen() {
       <View style={styles.form}>
         <Input
           label="Your Name / Nickname"
-          placeholder="e.g. Alex"
+          placeholder="user"
           value={name}
           onChangeText={setName}
           leftIcon={<User size={18} color={theme.text.tertiary} />}
@@ -108,7 +108,7 @@ export default function SignUpScreen() {
 
         <Input
           label="Email Address"
-          placeholder="athlete@example.com"
+          placeholder="user@gmail.com"
           value={email}
           onChangeText={(text) => {
             setEmail(text);

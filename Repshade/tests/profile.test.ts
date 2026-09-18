@@ -19,4 +19,16 @@ describe('Repshade App Polish & Settings Validation', () => {
     expect(PREDEFINED_SPLITS.upper_lower.workouts[0].name).toBe('Upper Body A');
     expect(PREDEFINED_SPLITS.upper_lower.workouts[1].name).toBe('Lower Body A');
   });
+
+  it('should have 12 avatar profiles with 6 Male and 6 Female presets', async () => {
+    const { AVATAR_PROFILES, MALE_AVATARS, FEMALE_AVATARS } = await import('../src/constants/avatars');
+    expect(AVATAR_PROFILES.length).toBe(12);
+    expect(MALE_AVATARS.length).toBe(6);
+    expect(FEMALE_AVATARS.length).toBe(6);
+
+    for (const avatar of AVATAR_PROFILES) {
+      expect(avatar.url).toMatch(/^https:\/\/lh3\.googleusercontent\.com\/d\//);
+      expect(avatar.name).toBeDefined();
+    }
+  });
 });

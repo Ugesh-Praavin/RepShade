@@ -18,7 +18,17 @@ export interface PersonalRecordRow {
 }
 
 export const recordRepository = {
-  async getAllPRs(userId: string): Promise<PersonalRecordRow[]> {
+  async getAllPRs(userId: string = 'local_user'): Promise<PersonalRecordRow[]> {
+    if (userId && userId !== 'local_user') {
+      return queryAll<PersonalRecordRow>(
+        `SELECT pr.*, e.name as exercise_name 
+         FROM personal_records pr
+         LEFT JOIN exercises e ON pr.exercise_id = e.id
+         WHERE pr.user_id = ? OR pr.user_id = 'local_user'
+         ORDER BY pr.achieved_at DESC;`,
+        [userId]
+      );
+    }
     return queryAll<PersonalRecordRow>(
       `SELECT pr.*, e.name as exercise_name 
        FROM personal_records pr

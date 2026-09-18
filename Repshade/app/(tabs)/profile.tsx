@@ -18,7 +18,9 @@ import {
   CloudCheck,
   Download,
   ShieldCheck,
+  Camera,
 } from 'lucide-react-native';
+import { Image } from 'expo-image';
 
 import {
   Screen,
@@ -27,32 +29,58 @@ import {
   Divider,
   AppButton,
   ConfirmDialog,
+  AvatarPickerModal,
 } from '@/components';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAuthStore } from '@/stores/authStore';
 import { useSplitStore } from '@/stores/splitStore';
+import { syncService } from '@/services/syncService';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
-  const { user, isAuthenticated, signOut } = useAuthStore();
+  const { user, isAuthenticated, signOut, updateProfilePhoto } = useAuthStore();
   const { activeSplit, nextWorkout } = useSplitStore();
 
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   const handleSignOut = async () => {
     setShowSignOutDialog(false);
     await signOut();
   };
 
-  const displayName = user?.displayName || (isAuthenticated ? 'Athlete' : 'UGESH PRAAVIN D');
-  const userEmail = user?.email || 'ugesh.praavin@training.local';
-  const initials = displayName
+  const handleCloudSync = async () => {
+    if (!isAuthenticated || !user?.uid || user.uid === 'local_user') {
+      router.push('/auth/sign-in');
+      return;
+    }
+
+    setIsSyncing(true);
+    setSyncStatus(null);
+    try {
+      const res = await syncService.syncAllLocalDataToFirestore(user.uid);
+      setSyncStatus(`Synced: ${res.workoutsSynced} workouts, ${res.splitsSynced} splits, ${res.prsSynced} PRs!`);
+      setTimeout(() => setSyncStatus(null), 5000);
+    } catch (e: any) {
+      setSyncStatus('Sync error. Please check your internet connection.');
+      setTimeout(() => setSyncStatus(null), 5000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const displayName = user?.displayName || 'user';
+  const userEmail = user?.email || (isAuthenticated ? 'user@gmail.com' : 'guest@gmail.com');
+  const initials = (displayName || 'U')
     .split(' ')
+    .filter(Boolean)
     .map((n) => n[0])
     .join('')
     .substring(0, 2)
-    .toUpperCase();
+    .toUpperCase() || 'U';
 
   return (
     <Screen scrollable edges={['top', 'bottom']}>
@@ -92,16 +120,34 @@ export default function ProfileScreen() {
         ])}
       >
         <View style={styles.identityRow}>
-          <View
+          <Pressable
             style={[
               styles.monogramAvatar,
-              { backgroundColor: theme.accent.primarySoft, borderColor: theme.accent.primary },
+              {
+                backgroundColor: user?.photoURL ? 'transparent' : theme.accent.primarySoft,
+                borderColor: theme.accent.primary,
+              },
             ]}
+            onPress={() => setShowAvatarPicker(true)}
+            accessibilityLabel="Change profile avatar"
           >
-            <AppText variant="h2" weight="900" color="accent">
-              {initials}
-            </AppText>
-          </View>
+            {user?.photoURL ? (
+              <Image
+                source={{ uri: user.photoURL }}
+                style={styles.avatarPhoto}
+                contentFit="cover"
+                cachePolicy="memory-disk"
+                transition={200}
+              />
+            ) : (
+              <AppText variant="h2" weight="900" color="accent">
+                {initials}
+              </AppText>
+            )}
+            <View style={[styles.avatarBadge, { backgroundColor: theme.accent.primary }]}>
+              <Camera size={11} color="#0B0D0F" strokeWidth={2.5} />
+            </View>
+          </Pressable>
 
           <View style={styles.identityDetails}>
             <View style={styles.nameRow}>
@@ -113,10 +159,60 @@ export default function ProfileScreen() {
             <AppText variant="caption" color="secondary" numberOfLines={1}>
               {userEmail}
             </AppText>
-            <AppText variant="caption" color="tertiary" weight="700" style={{ marginTop: 2 }}>
-              ATHLETE #0482 • ON-DEVICE VAULT ACTIVE
+            <Pressable
+              onPress={() => setShowAvatarPicker(true)}
+              style={styles.changeAvatarBtn}
+              hitSlop={8}
+            >
+              <AppText variant="caption" color="accent" weight="700">
+                {user?.photoURL ? 'CHANGE AVATAR' : 'CHOOSE AVATAR (12 PRESETS)'}
+              </AppText>
+            </Pressable>
+          </View>
+        </View>
+      </Card>
+
+      {/* 2.5 CLOUD SYNC CALLOUT */}
+      <Card
+        variant="highlighted"
+        style={StyleSheet.flatten([
+          styles.cloudCard,
+          { backgroundColor: theme.background.secondary, borderColor: theme.accent.primary },
+        ])}
+      >
+        <View style={styles.cloudRow}>
+          <CloudCheck size={22} color={theme.accent.primary} />
+          <View style={{ flex: 1 }}>
+            <AppText variant="label" weight="800" color="primary">
+              {isAuthenticated ? 'CLOUD SYNC & BACKUP' : 'SYNC GUEST DATA TO CLOUD'}
+            </AppText>
+            <AppText variant="caption" color="secondary" style={{ marginTop: 2 }}>
+              {syncStatus ||
+                (isAuthenticated
+                  ? 'All on-device routines, sessions, and PRs are backed up to Firestore.'
+                  : 'Training as Guest? Sign in or create an account to migrate and sync all your local workouts and PRs with the cloud.')}
             </AppText>
           </View>
+        </View>
+        <View style={{ marginTop: 10 }}>
+          {isAuthenticated ? (
+            <AppButton
+              title={isSyncing ? 'SYNCING DATA...' : 'SYNC DATA TO CLOUD'}
+              onPress={handleCloudSync}
+              loading={isSyncing}
+              variant="secondary"
+              size="sm"
+              leftIcon={<RotateCw size={14} color={theme.accent.primary} />}
+            />
+          ) : (
+            <AppButton
+              title="SIGN IN / CREATE ACCOUNT TO SYNC"
+              onPress={() => router.push('/auth/sign-in')}
+              variant="primary"
+              size="sm"
+              leftIcon={<LogIn size={14} color="#0B0D0F" />}
+            />
+          )}
         </View>
       </Card>
 
@@ -333,6 +429,16 @@ export default function ProfileScreen() {
         onCancel={() => setShowSignOutDialog(false)}
         destructive={true}
       />
+
+      {/* AVATAR PICKER MODAL (12 PRESETS - CACHED VIA EXPO-IMAGE) */}
+      <AvatarPickerModal
+        visible={showAvatarPicker}
+        currentPhotoUrl={user?.photoURL}
+        onClose={() => setShowAvatarPicker(false)}
+        onSelectAvatar={async (url) => {
+          await updateProfilePhoto(url);
+        }}
+      />
     </Screen>
   );
 }
@@ -363,7 +469,18 @@ const styles = StyleSheet.create({
   identityCard: {
     marginHorizontal: 20,
     padding: 16,
+    marginBottom: 12,
+  },
+  cloudCard: {
+    marginHorizontal: 20,
+    padding: 14,
     marginBottom: 16,
+    borderWidth: 1,
+  },
+  cloudRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   identityRow: {
     flexDirection: 'row',
@@ -371,12 +488,33 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   monogramAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+  },
+  avatarPhoto: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 30,
+  },
+  avatarBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#0B0D0F',
+  },
+  changeAvatarBtn: {
+    marginTop: 4,
   },
   identityDetails: {
     flex: 1,

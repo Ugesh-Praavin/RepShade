@@ -6,13 +6,20 @@ import { Trophy, ArrowRight, CheckCircle2, Play, Flame } from 'lucide-react-nati
 import { Screen, AppText, AppButton, Card } from '@/components';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useOnboardingStore } from '@/stores/onboardingStore';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function OnboardingCompleteScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
   const { splitName, workouts } = useOnboardingStore();
+  const { continueAsGuest } = useAuthStore();
 
   const firstWorkout = workouts[0];
+
+  const handleContinueGuest = () => {
+    continueAsGuest();
+    router.replace('/(tabs)');
+  };
 
   return (
     <Screen edges={['top', 'bottom']} contentContainerStyle={styles.container}>
@@ -75,7 +82,7 @@ export default function OnboardingCompleteScreen() {
         />
         <AppButton
           title="CONTINUE AS GUEST ATHLETE"
-          onPress={() => router.replace('/(tabs)')}
+          onPress={handleContinueGuest}
           variant="ghost"
           size="sm"
         />

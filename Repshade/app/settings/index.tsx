@@ -13,6 +13,7 @@ import {
   RefreshCw,
   LogOut,
   Trash2,
+  CloudCheck,
 } from 'lucide-react-native';
 
 import {
@@ -31,6 +32,7 @@ import { useExerciseStore } from '@/stores/exerciseStore';
 import { useAuthStore } from '@/stores/authStore';
 import { settingsRepository } from '@/repositories/settingsRepository';
 import { resetDatabase } from '@/database/client';
+import { syncService } from '@/services/syncService';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -46,6 +48,7 @@ export default function SettingsScreen() {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isReseeding, setIsReseeding] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     async function loadSettings() {
@@ -76,6 +79,33 @@ export default function SettingsScreen() {
   const handleAutoRestTimerChange = async (val: boolean) => {
     setAutoRestTimer(val);
     await settingsRepository.updateSettings(userId, { auto_start_rest_timer: val ? 1 : 0 });
+  };
+
+  const handleCloudSync = async () => {
+    if (!isAuthenticated || !user?.uid || user.uid === 'local_user') {
+      Alert.alert(
+        'Guest Mode',
+        'Sign in or create an account to back up and sync your offline workouts to the cloud.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign In / Sign Up', onPress: () => router.push('/auth/sign-in') },
+        ]
+      );
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const res = await syncService.syncAllLocalDataToFirestore(user.uid);
+      Alert.alert(
+        'Cloud Sync Successful',
+        `Successfully synced ${res.workoutsSynced} workouts, ${res.splitsSynced} splits, and ${res.prsSynced} PRs to Firestore.`
+      );
+    } catch (e: any) {
+      Alert.alert('Sync Failed', 'Could not sync with the cloud. Check your network connection.');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleReseed = async () => {
@@ -221,13 +251,40 @@ export default function SettingsScreen() {
               styles.actionRow,
               pressed && { backgroundColor: theme.background.elevated },
             ]}
+            onPress={handleCloudSync}
+            disabled={isSyncing}
+          >
+            <View style={styles.actionLeft}>
+              <CloudCheck size={18} color={theme.accent.primary} />
+              <View>
+                <AppText variant="bodyMd" weight="700">
+                  {isSyncing ? 'Syncing to Cloud...' : 'Cloud Data Sync'}
+                </AppText>
+                <AppText variant="caption" color="secondary">
+                  {isAuthenticated
+                    ? 'Upload and synchronize local sessions & PRs with Firestore'
+                    : 'Sign in to migrate and back up local workouts to the cloud'}
+                </AppText>
+              </View>
+            </View>
+            <ChevronRight size={18} color={theme.text.tertiary} />
+          </Pressable>
+
+          <Divider style={{ marginVertical: 8 }} />
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.actionRow,
+              pressed && { backgroundColor: theme.background.elevated },
+            ]}
             onPress={handleReseed}
+            disabled={isReseeding}
           >
             <View style={styles.actionLeft}>
               <RefreshCw size={18} color={theme.accent.primary} />
               <View>
                 <AppText variant="bodyMd" weight="700">
-                  Re-seed System Exercises
+                  {isReseeding ? 'Reseeding Library...' : 'Re-seed System Exercises'}
                 </AppText>
                 <AppText variant="caption" color="secondary">
                   Ensure 50+ bundled exercises are present in SQLite

@@ -23,13 +23,14 @@ import {
 } from '@/components';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { recordRepository, PersonalRecordRow } from '@/repositories/recordRepository';
-import { exerciseRepository, ExerciseRow } from '@/repositories/exerciseRepository';
+import { exerciseRepository } from '@/repositories/exerciseRepository';
+import { useAuthStore } from '@/stores/authStore';
 import { workoutEngine } from '@/domain/workout/workoutEngine';
 
 export interface PRWithExercise extends PersonalRecordRow {
-  exercise_name?: string;
-  primary_muscle?: string;
-  equipment?: string;
+  exercise_name: string;
+  primary_muscle: string;
+  equipment: string;
 }
 
 const MUSCLE_FILTERS = ['All', 'Chest', 'Back', 'Shoulders', 'Legs', 'Arms'];
@@ -37,6 +38,8 @@ const MUSCLE_FILTERS = ['All', 'Chest', 'Back', 'Shoulders', 'Legs', 'Arms'];
 export default function PersonalRecordsScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
+  const { user } = useAuthStore();
+  const effectiveUserId = user?.uid || 'local_user';
 
   const [prs, setPrs] = useState<PRWithExercise[]>([]);
   const [selectedMuscle, setSelectedMuscle] = useState('All');
@@ -45,7 +48,7 @@ export default function PersonalRecordsScreen() {
   const loadPRs = async () => {
     setIsLoading(true);
     try {
-      const records = await recordRepository.getAllPRs('local_user');
+      const records = await recordRepository.getAllPRs(effectiveUserId);
       const enriched: PRWithExercise[] = [];
 
       for (const r of records) {
@@ -69,7 +72,7 @@ export default function PersonalRecordsScreen() {
   useEffect(() => {
     let isMounted = true;
     recordRepository
-      .getAllPRs('local_user')
+      .getAllPRs(effectiveUserId)
       .then(async (records) => {
         const enriched: PRWithExercise[] = [];
         for (const r of records) {
@@ -94,7 +97,7 @@ export default function PersonalRecordsScreen() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [effectiveUserId]);
 
   const filteredPrs =
     selectedMuscle === 'All'

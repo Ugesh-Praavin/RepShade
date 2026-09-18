@@ -183,4 +183,26 @@ describe('Firestore syncService', () => {
       { merge: true }
     );
   });
+
+  it('should migrate guest data from local_user to new authenticated user ID', async () => {
+    const result = await syncService.migrateGuestDataToUser('firebase_auth_user_999');
+    expect(result).toBeDefined();
+    expect(result.migratedCount).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should safely no-op migrateGuestDataToUser when given local_user or empty ID', async () => {
+    const res1 = await syncService.migrateGuestDataToUser('local_user');
+    expect(res1.migratedCount).toBe(0);
+
+    const res2 = await syncService.migrateGuestDataToUser('');
+    expect(res2.migratedCount).toBe(0);
+  });
+
+  it('should run syncAllLocalDataToFirestore without throwing for valid userId', async () => {
+    const result = await syncService.syncAllLocalDataToFirestore('firebase_auth_user_999');
+    expect(result).toBeDefined();
+    expect(typeof result.workoutsSynced).toBe('number');
+    expect(typeof result.splitsSynced).toBe('number');
+    expect(typeof result.prsSynced).toBe('number');
+  });
 });

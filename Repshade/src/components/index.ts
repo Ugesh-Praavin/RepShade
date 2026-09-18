@@ -22,3 +22,4 @@ export * from './SyncIndicator';
 export * from './StatCard';
 export * from './ProgressBar';
 export * from './AnimatedSplashScreen';
+export * from './AvatarPickerModal';

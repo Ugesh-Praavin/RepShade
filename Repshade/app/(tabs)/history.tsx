@@ -39,10 +39,13 @@ import {
 import { workoutRepository, WorkoutSetRow } from '@/repositories/workoutRepository';
 import { splitRepository, WorkoutExerciseRow } from '@/repositories/splitRepository';
 import { workoutEngine } from '@/domain/workout/workoutEngine';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function HistoryScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
+  const { user } = useAuthStore();
+  const effectiveUserId = user?.uid || 'local_user';
 
   const [historyItems, setHistoryItems] = useState<CompletedWorkoutHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +59,7 @@ export default function HistoryScreen() {
   const loadHistory = async () => {
     setIsLoading(true);
     try {
-      const items = await historyRepository.getWorkoutHistory('local_user', 50);
+      const items = await historyRepository.getWorkoutHistory(effectiveUserId, 50);
       setHistoryItems(items);
     } catch (e) {
       console.error('Error loading history:', e);
@@ -67,7 +70,7 @@ export default function HistoryScreen() {
 
   useEffect(() => {
     let isMounted = true;
-    historyRepository.getWorkoutHistory('local_user', 50)
+    historyRepository.getWorkoutHistory(effectiveUserId, 50)
       .then((items) => {
         if (isMounted) {
           setHistoryItems(items);
@@ -83,7 +86,7 @@ export default function HistoryScreen() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [effectiveUserId]);
 
   const handleOpenDetails = async (session: CompletedWorkoutHistoryItem) => {
     setSelectedSession(session);

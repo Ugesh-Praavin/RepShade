@@ -15,6 +15,7 @@ import {
 } from '@/components';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useExerciseStore } from '@/stores/exerciseStore';
+import { useAuthStore } from '@/stores/authStore';
 
 const MUSCLE_CHOICES = [
   'Chest',
@@ -57,8 +58,9 @@ export default function CreateExerciseScreen() {
     }
 
     try {
+      const currentUserId = useAuthStore.getState().user?.uid || 'local_user';
       await createCustomExercise({
-        userId: 'local_user',
+        userId: currentUserId,
         name: name.trim(),
         primaryMuscle,
         equipment,

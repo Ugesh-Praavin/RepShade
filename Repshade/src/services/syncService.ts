@@ -8,6 +8,7 @@ import { WorkoutWithExercises } from '../stores/splitStore';
 import { WorkoutSummaryInfo } from '../stores/workoutStore';
 import { AuthUser } from './authService';
 import { generateUUID } from '../utils/uuid';
+import { execute, queryAll } from '../database/client';
 
 export const syncService = {
   /**
@@ -338,5 +339,228 @@ export const syncService = {
    */
   async getPendingCount(userId: string = 'local_user'): Promise<number> {
     return syncRepository.getPendingCount(userId);
+  },
+
+  /**
+   * Migrates all local data recorded as a guest ('local_user' or 'guest_user') to the new authenticated user ID
+   */
+  async migrateGuestDataToUser(newUserId: string): Promise<{ migratedCount: number }> {
+    if (!newUserId || newUserId === 'local_user' || newUserId === 'guest_user') {
+      return { migratedCount: 0 };
+    }
+
+    let migratedCount = 0;
+    const now = Date.now();
+
+    try {
+      // 1. Migrate workout sessions
+      const sRes = await execute(
+        `UPDATE workout_sessions SET user_id = ?, updated_at = ? WHERE user_id = 'local_user' OR user_id = 'guest_user';`,
+        [newUserId, now]
+      );
+      migratedCount += sRes.changes || 0;
+
+      // 2. Migrate splits
+      const spRes = await execute(
+        `UPDATE splits SET user_id = ?, updated_at = ? WHERE user_id = 'local_user' OR user_id = 'guest_user';`,
+        [newUserId, now]
+      );
+      migratedCount += spRes.changes || 0;
+
+      // 3. Migrate workout templates
+      const wtRes = await execute(
+        `UPDATE workout_templates SET user_id = ?, updated_at = ? WHERE user_id = 'local_user' OR user_id = 'guest_user';`,
+        [newUserId, now]
+      );
+      migratedCount += wtRes.changes || 0;
+
+      // 4. Migrate personal records
+      const prRes = await execute(
+        `UPDATE personal_records SET user_id = ?, updated_at = ? WHERE user_id = 'local_user' OR user_id = 'guest_user';`,
+        [newUserId, now]
+      );
+      migratedCount += prRes.changes || 0;
+
+      // 5. Migrate body weight entries
+      const bwRes = await execute(
+        `UPDATE body_weight_entries SET user_id = ?, updated_at = ? WHERE user_id = 'local_user' OR user_id = 'guest_user';`,
+        [newUserId, now]
+      );
+      migratedCount += bwRes.changes || 0;
+
+      // 6. Migrate sync operations
+      await execute(
+        `UPDATE sync_operations SET user_id = ? WHERE user_id = 'local_user' OR user_id = 'guest_user';`,
+        [newUserId]
+      );
+
+      console.log(`[SyncService] Migrated ${migratedCount} local guest items to user ${newUserId}`);
+    } catch (err: any) {
+      console.warn('Error during guest data migration:', err?.message || err);
+    }
+
+    return { migratedCount };
+  },
+
+  /**
+   * Complete cloud sync: migrates any guest data and uploads all local routines, workout history,
+   * personal records, and metrics to Firestore.
+   */
+  async syncAllLocalDataToFirestore(userId: string): Promise<{
+    workoutsSynced: number;
+    splitsSynced: number;
+    prsSynced: number;
+    metricsSynced: number;
+  }> {
+    if (!userId || userId === 'local_user' || userId === 'guest_user') {
+      return { workoutsSynced: 0, splitsSynced: 0, prsSynced: 0, metricsSynced: 0 };
+    }
+
+    // Step 1: Migrate any guest data to this user ID
+    await this.migrateGuestDataToUser(userId);
+
+    let workoutsSynced = 0;
+    let splitsSynced = 0;
+    let prsSynced = 0;
+    let metricsSynced = 0;
+
+    // Step 2: Sync Splits & Workout Templates
+    try {
+      const splits = await queryAll<SplitRow>(
+        'SELECT * FROM splits WHERE user_id = ? ORDER BY created_at DESC;',
+        [userId]
+      );
+
+      for (const split of splits) {
+        const templates = await queryAll<any>(
+          'SELECT * FROM workout_templates WHERE split_id = ? ORDER BY workout_order ASC;',
+          [split.id]
+        );
+
+        const fullWorkouts: WorkoutWithExercises[] = [];
+        for (const wt of templates) {
+          const exercises = await queryAll<any>(
+            `SELECT we.*, e.name as exercise_name, e.primary_muscle
+             FROM workout_exercises we
+             LEFT JOIN exercises e ON we.exercise_id = e.id
+             WHERE we.workout_template_id = ?
+             ORDER BY we.exercise_order ASC;`,
+            [wt.id]
+          );
+          fullWorkouts.push({ ...wt, exercises });
+        }
+
+        await this.syncSplit(userId, split, fullWorkouts);
+        splitsSynced++;
+      }
+    } catch (err) {
+      console.warn('Error syncing splits in syncAllLocalDataToFirestore:', err);
+    }
+
+    // Step 3: Sync Completed Workout Sessions & Sets
+    try {
+      const sessions = await queryAll<any>(
+        `SELECT * FROM workout_sessions WHERE user_id = ? AND status = 'completed' ORDER BY started_at ASC;`,
+        [userId]
+      );
+
+      for (const sess of sessions) {
+        const sets = await queryAll<WorkoutSetRow>(
+          'SELECT * FROM workout_sets WHERE workout_session_id = ? ORDER BY set_number ASC;',
+          [sess.id]
+        );
+
+        const completedSets = sets.filter((s) => s.completed === 1);
+
+        const summary: WorkoutSummaryInfo = {
+          session: sess,
+          templateName: 'Workout Session',
+          templateDescription: '',
+          totalVolume: sess.total_volume || 0,
+          totalSets: sess.total_sets || completedSets.length,
+          totalReps: sess.total_reps || 0,
+          durationSeconds: sess.duration_seconds || 0,
+          prsAchieved: [],
+          breakdown: [],
+          nextWorkoutName: '',
+          nextWorkoutDescription: '',
+          currentSplitIndex: sess.split_advanced || 0,
+          totalSplitWorkouts: 3,
+        };
+
+        await this.syncCompletedWorkout(userId, summary, completedSets);
+        workoutsSynced++;
+      }
+    } catch (err) {
+      console.warn('Error syncing workouts in syncAllLocalDataToFirestore:', err);
+    }
+
+    // Step 4: Sync Personal Records
+    try {
+      const prs = await queryAll<any>(
+        'SELECT * FROM personal_records WHERE user_id = ? ORDER BY achieved_at DESC;',
+        [userId]
+      );
+
+      if (firestore) {
+        for (const pr of prs) {
+          const prRef = doc(firestore, 'users', userId, 'prs', pr.exercise_id);
+          await setDoc(
+            prRef,
+            {
+              exerciseId: pr.exercise_id,
+              recordType: pr.record_type,
+              value: pr.value,
+              weight: pr.weight,
+              reps: pr.reps,
+              achievedAt: pr.achieved_at,
+              syncedAt: Date.now(),
+            },
+            { merge: true }
+          );
+          prsSynced++;
+        }
+      }
+    } catch (err) {
+      console.warn('Error syncing PRs in syncAllLocalDataToFirestore:', err);
+    }
+
+    // Step 5: Sync Body Weight Logs
+    try {
+      const weightLogs = await queryAll<any>(
+        'SELECT * FROM body_weight_entries WHERE user_id = ? ORDER BY recorded_at ASC;',
+        [userId]
+      );
+
+      if (firestore) {
+        for (const log of weightLogs) {
+          const logRef = doc(firestore, 'users', userId, 'body_weight_logs', log.id);
+          await setDoc(
+            logRef,
+            {
+              id: log.id,
+              userId,
+              weight: log.weight,
+              unit: log.unit,
+              recordedAt: log.recorded_at,
+              syncedAt: Date.now(),
+            },
+            { merge: true }
+          );
+          metricsSynced++;
+        }
+      }
+    } catch (err) {
+      console.warn('Error syncing weight logs in syncAllLocalDataToFirestore:', err);
+    }
+
+    // Step 6: Process any remaining pending offline queue
+    await this.processPendingQueue(userId);
+
+    console.log(
+      `[SyncService] Complete cloud sync finished for ${userId}: ${workoutsSynced} workouts, ${splitsSynced} splits, ${prsSynced} PRs, ${metricsSynced} metrics.`
+    );
+
+    return { workoutsSynced, splitsSynced, prsSynced, metricsSynced };
   },
 };

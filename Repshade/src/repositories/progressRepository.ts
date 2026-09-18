@@ -13,15 +13,16 @@ export interface BodyWeightRow {
 }
 
 export const progressRepository = {
-  async getWeeklyVolume(userId: string, weeksCount: number = 8): Promise<{ weekStart: number; totalVolume: number }[]> {
+  async getWeeklyVolume(userId: string = 'local_user', weeksCount: number = 8): Promise<{ weekStart: number; totalVolume: number }[]> {
     const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
     const now = Date.now();
     const cutoff = now - weeksCount * oneWeekMs;
 
+    const userCondition = userId && userId !== 'local_user' ? `(user_id = ? OR user_id = 'local_user')` : `user_id = ?`;
     const sessions = await queryAll<{ started_at: number; total_volume: number }>(
       `SELECT started_at, total_volume 
        FROM workout_sessions 
-       WHERE user_id = ? AND status = 'completed' AND started_at >= ?
+       WHERE ${userCondition} AND status = 'completed' AND started_at >= ?
        ORDER BY started_at ASC;`,
       [userId, cutoff]
     );

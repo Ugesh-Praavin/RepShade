@@ -18,7 +18,7 @@ import { useAuthStore } from '@/stores/authStore';
 export default function SignInScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
-  const { signIn, isLoading, error, clearError } = useAuthStore();
+  const { signIn, isLoading, error, clearError, continueAsGuest } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,6 +39,11 @@ export default function SignInScreen() {
     } catch {
       // Error handled by authStore
     }
+  };
+
+  const handleContinueAsGuest = () => {
+    continueAsGuest();
+    router.replace('/(tabs)');
   };
 
   return (
@@ -68,7 +73,7 @@ export default function SignInScreen() {
       <View style={styles.form}>
         <Input
           label="Email Address"
-          placeholder="athlete@example.com"
+          placeholder="user@gmail.com"
           value={email}
           onChangeText={(text) => {
             setEmail(text);
@@ -112,7 +117,7 @@ export default function SignInScreen() {
         {/* Offline / Guest Mode */}
         <AppButton
           title="CONTINUE AS GUEST (OFFLINE)"
-          onPress={() => router.replace('/(tabs)')}
+          onPress={handleContinueAsGuest}
           variant="secondary"
           size="md"
           style={styles.guestBtn}

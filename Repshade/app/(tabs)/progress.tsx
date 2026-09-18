@@ -25,10 +25,13 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { progressRepository } from '@/repositories/progressRepository';
 import { recordRepository, PersonalRecordRow } from '@/repositories/recordRepository';
 import { historyRepository } from '@/repositories/historyRepository';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function ProgressScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
+  const { user } = useAuthStore();
+  const effectiveUserId = user?.uid || 'local_user';
 
   const [weeklyVolume, setWeeklyVolume] = useState<{ weekStart: number; totalVolume: number }[]>([]);
   const [prs, setPrs] = useState<PersonalRecordRow[]>([]);
@@ -37,9 +40,9 @@ export default function ProgressScreen() {
   const loadProgressData = async () => {
     try {
       const [vol, allPrs, history] = await Promise.all([
-        progressRepository.getWeeklyVolume('local_user', 6),
-        recordRepository.getAllPRs('local_user'),
-        historyRepository.getWorkoutHistory('local_user', 100),
+        progressRepository.getWeeklyVolume(effectiveUserId, 6),
+        recordRepository.getAllPRs(effectiveUserId),
+        historyRepository.getWorkoutHistory(effectiveUserId, 100),
       ]);
       setWeeklyVolume(vol);
       setPrs(allPrs);
@@ -52,9 +55,9 @@ export default function ProgressScreen() {
   useEffect(() => {
     let isMounted = true;
     Promise.all([
-      progressRepository.getWeeklyVolume('local_user', 6),
-      recordRepository.getAllPRs('local_user'),
-      historyRepository.getWorkoutHistory('local_user', 100),
+      progressRepository.getWeeklyVolume(effectiveUserId, 6),
+      recordRepository.getAllPRs(effectiveUserId),
+      historyRepository.getWorkoutHistory(effectiveUserId, 100),
     ])
       .then(([vol, allPrs, history]) => {
         if (isMounted) {
@@ -70,7 +73,7 @@ export default function ProgressScreen() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [effectiveUserId]);
 
   const totalWeeklyVol = weeklyVolume.reduce((acc, curr) => acc + curr.totalVolume, 0);
   const maxWeeklyVol = Math.max(...weeklyVolume.map((w) => w.totalVolume), 1000);

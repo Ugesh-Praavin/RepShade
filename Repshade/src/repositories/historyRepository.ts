@@ -7,7 +7,19 @@ export interface CompletedWorkoutHistoryItem extends WorkoutSessionRow {
 }
 
 export const historyRepository = {
-  async getWorkoutHistory(userId: string, limit: number = 50): Promise<CompletedWorkoutHistoryItem[]> {
+  async getWorkoutHistory(userId: string = 'local_user', limit: number = 50): Promise<CompletedWorkoutHistoryItem[]> {
+    if (userId && userId !== 'local_user') {
+      return queryAll<CompletedWorkoutHistoryItem>(
+        `SELECT ws.*, s.name as split_name, wt.name as workout_template_name
+         FROM workout_sessions ws
+         LEFT JOIN splits s ON ws.split_id = s.id
+         LEFT JOIN workout_templates wt ON ws.workout_template_id = wt.id
+         WHERE (ws.user_id = ? OR ws.user_id = 'local_user') AND ws.status = 'completed'
+         ORDER BY ws.started_at DESC
+         LIMIT ?;`,
+        [userId, limit]
+      );
+    }
     return queryAll<CompletedWorkoutHistoryItem>(
       `SELECT ws.*, s.name as split_name, wt.name as workout_template_name
        FROM workout_sessions ws
