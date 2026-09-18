@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repshade — Rest Timer (Screen 04)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            background: {
+              primary: '#0B0D0F',
+              secondary: '#121519',
+              tertiary: '#191D21',
+              elevated: '#20252A',
+            },
+            repshade: {
+              lime: '#B8F34A',
+              limePressed: '#A4DD3F',
+              limeSoft: 'rgba(184, 243, 74, 0.12)',
+              limeSubtle: 'rgba(184, 243, 74, 0.06)',
+            },
+            text: {
+              primary: '#F5F7F8',
+              secondary: '#A8B0B7',
+              tertiary: '#707980',
+            },
+            border: {
+              subtle: '#242A2F',
+              default: '#30373D',
+            },
+            semantic: {
+              success: '#6FD08C',
+              warning: '#F2C94C',
+              error: '#FF6B6B',
+              info: '#6EA8FE',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0D0F;
+      color: #F5F7F8;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Subtle pulsing effect for the countdown dot */
+    @keyframes subtle-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    .animate-subtle-pulse {
+      animation: subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#0B0D0F] text-[#F5F7F8] min-h-screen flex justify-center selection:bg-repshade-lime selection:text-black">
+  <!-- Mobile Device Container (390px simulated portrait width) -->
+  <div class="w-full max-w-[412px] bg-[#0B0D0F] min-h-screen flex flex-col justify-between border-x border-[#191D21] relative shadow-2xl">
+    
+    <!-- Top System & Active Workout Header -->
+    <header class="pt-3 px-4 pb-3 border-b border-[#1F2429] bg-[#0B0D0F]/95 backdrop-blur-md sticky top-0 z-40">
+      <!-- Status & Top Control Bar -->
+      <div class="flex items-center justify-between mb-2.5">
+        <!-- Minimize Workout -->
+        <button class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#14181D] hover:bg-[#1A1F25] active:bg-[#20252A] border border-[#242A2F] text-xs font-semibold tracking-wider text-[#A8B0B7] hover:text-[#F5F7F8] transition-colors" aria-label="Minimize workout">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <span>MINIMIZE</span>
+        </button>
+
+        <!-- Workout Context Title -->
+        <div class="text-center">
+          <h1 class="text-xs font-bold tracking-widest text-[#F5F7F8] uppercase">PUSH A</h1>
+          <p class="text-[11px] font-medium text-[#707980] tracking-wide mt-0.5">EXERCISE 1 OF 7</p>
+        </div>
+
+        <!-- Elapsed Workout Timer & Pause -->
+        <button class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#14181D] border border-[#242A2F] text-xs font-mono font-bold text-[#F5F7F8] hover:bg-[#1A1F25] transition-colors" aria-label="Pause workout">
+          <span class="text-[13px] tracking-tight text-[#F5F7F8]">33:45</span>
+          <svg class="w-3 h-3 text-[#A8B0B7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Offline Telemetry & Progress Ribbon -->
+      <div class="flex items-center justify-between text-[11px] font-mono text-[#707980] px-0.5 pt-0.5">
+        <div class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#6FD08C]"></span>
+          <span class="tracking-wider uppercase text-[10px] text-[#A8B0B7]">OFFLINE READY • LOCAL LOG</span>
+        </div>
+        <span class="text-[10px] tracking-wider text-[#A8B0B7] uppercase font-semibold">2/4 SETS LOGGED</span>
+      </div>
+
+      <!-- Workout Micro Progress Segments (Exercise 1 has 4 sets) -->
+      <div class="grid grid-cols-7 gap-1 mt-2.5">
+        <div class="h-1 rounded-full bg-[#B8F34A]"></div>
+        <div class="h-1 rounded-full bg-[#20252A]"></div>
+        <div class="h-1 rounded-full bg-[#20252A]"></div>
+        <div class="h-1 rounded-full bg-[#20252A]"></div>
+        <div class="h-1 rounded-full bg-[#20252A]"></div>
+        <div class="h-1 rounded-full bg-[#20252A]"></div>
+        <div class="h-1 rounded-full bg-[#20252A]"></div>
+      </div>
+    </header>
+
+    <!-- Main Scrollable Workout Stage -->
+    <main class="flex-1 px-4 py-3 flex flex-col justify-between overflow-y-auto space-y-4">
+      
+      <!-- Current Exercise Info (Context Preserved) -->
+      <div class="bg-[#121519] border border-[#242A2F] rounded-2xl p-3.5">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#B8F34A]">CURRENT EXERCISE</span>
+            <h2 class="text-base font-bold text-[#F5F7F8] tracking-tight uppercase mt-0.5">BARBELL BENCH PRESS</h2>
+            <p class="text-xs font-medium text-[#707980] mt-0.5">Chest • Triceps • Flat Bench</p>
+          </div>
+          <!-- Completed Set 2 Badge -->
+          <div class="text-right">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#1C2417] border border-[#2E451F] text-[11px] font-bold text-[#B8F34A]">
+              <svg class="w-3 h-3 text-[#B8F34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              SET 2 DONE
+            </span>
+            <p class="text-[11px] font-mono text-[#A8B0B7] mt-1">82.5 kg × 8 reps</p>
+          </div>
+        </div>
+
+        <!-- Compact Settled Sets History (Sets 1 & 2) -->
+        <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-[#1C2126] text-xs">
+          <div class="flex items-center justify-between px-2 py-1 rounded bg-[#0B0D0F] border border-[#1A1F24]">
+            <span class="text-[11px] font-bold text-[#707980]">SET 1</span>
+            <span class="font-mono text-[#A8B0B7]">80.0 kg × 8</span>
+            <span class="text-[#6FD08C] text-xs">✓</span>
+          </div>
+          <div class="flex items-center justify-between px-2 py-1 rounded bg-[#0B0D0F] border border-[#2E451F]">
+            <span class="text-[11px] font-bold text-[#B8F34A]">SET 2</span>
+            <span class="font-mono text-[#F5F7F8] font-bold">82.5 kg × 8</span>
+            <span class="text-[10px] font-bold px-1 rounded bg-[#B8F34A] text-black">PR</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Central Hero: Dedicated Rest Timer Instrument -->
+      <div class="relative bg-[#121519] border border-[#242A2F] rounded-3xl p-5 flex flex-col items-center shadow-lg">
+        
+        <!-- Header Tag with Status Pulse -->
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-2 h-2 rounded-full bg-[#B8F34A] animate-subtle-pulse"></span>
+          <span class="text-xs font-extrabold tracking-widest text-[#B8F34A] uppercase">REST INTERVAL</span>
+          <span class="text-xs text-[#707980] font-mono">/ 02:00 TARGET</span>
+        </div>
+
+        <!-- Minimal SVG Circular Progress Ring -->
+        <div class="relative w-56 h-56 flex items-center justify-center my-1">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 220 220">
+            <!-- Background Ring -->
+            <circle
+              cx="110"
+              cy="110"
+              r="94"
+              stroke="#1C2127"
+              stroke-width="7"
+              fill="transparent"
+            />
+            <!-- Accent Progress Ring (01:32 remaining of 02:00 = 28 seconds elapsed = ~23% progress) -->
+            <!-- Circumference = 2 * PI * 94 ~= 590.62. Remaining 92s / 120s = 76.6% remaining -->
+            <circle
+              cx="110"
+              cy="110"
+              r="94"
+              stroke="#B8F34A"
+              stroke-width="7"
+              stroke-linecap="round"
+              stroke-dasharray="590.62"
+              stroke-dashoffset="138"
+              fill="transparent"
+              class="transition-all duration-1000 ease-linear"
+            />
+          </svg>
+
+          <!-- Inner Content: Digital Timer Countdown -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <!-- Large Primary Countdown Numbers -->
+            <div class="flex items-baseline justify-center">
+              <span class="text-5xl font-extrabold font-mono tracking-tight text-[#F5F7F8]">01:32</span>
+            </div>
+            <p class="text-xs font-semibold tracking-wider text-[#A8B0B7] uppercase mt-1">REMAINING</p>
+            
+            <!-- Target Interval & Recovery Pace -->
+            <div class="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#191D21] border border-[#242A2F] text-[11px] text-[#707980]">
+              <svg class="w-3 h-3 text-[#A8B0B7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Auto-recovery timer</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Increments & Adjustment Controls -->
+        <div class="grid grid-cols-2 gap-2.5 w-full max-w-[290px] mt-2 mb-4">
+          <button class="h-11 rounded-xl bg-[#191D21] hover:bg-[#20252A] active:bg-[#282F36] border border-[#242A2F] flex items-center justify-center gap-1.5 text-xs font-bold text-[#F5F7F8] transition-colors" aria-label="Add 30 seconds to rest">
+            <span class="text-[#B8F34A] text-sm">+</span>
+            <span>30 SEC</span>
+          </button>
+          <button class="h-11 rounded-xl bg-[#191D21] hover:bg-[#20252A] active:bg-[#282F36] border border-[#242A2F] flex items-center justify-center gap-1.5 text-xs font-bold text-[#F5F7F8] transition-colors" aria-label="Add 60 seconds to rest">
+            <span class="text-[#B8F34A] text-sm">+</span>
+            <span>60 SEC</span>
+          </button>
+        </div>
+
+        <!-- Next Set Target Anticipation Card -->
+        <div class="w-full bg-[#0B0D0F] border border-[#242A2F] rounded-2xl p-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-[#191D21] border border-[#2E363E] flex items-center justify-center text-xs font-black font-mono text-[#B8F34A]">
+              03
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#A8B0B7]">UP NEXT IN SETS</span>
+                <span class="w-1 h-1 rounded-full bg-[#707980]"></span>
+                <span class="text-[10px] font-mono text-[#707980]">SET 3 OF 4</span>
+              </div>
+              <p class="text-sm font-bold text-[#F5F7F8] tracking-tight">82.5 kg <span class="text-xs text-[#707980] font-normal font-mono">×</span> 8 reps</p>
+            </div>
+          </div>
+          <div class="text-right pl-2 border-l border-[#1C2126]">
+            <span class="text-[9px] font-bold text-[#707980] uppercase tracking-wider block">LAST SESSION</span>
+            <span class="text-xs font-mono font-medium text-[#A8B0B7]">75.0 kg × 10</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Action Controls for Lifter -->
+      <div class="space-y-2 pt-1">
+        <!-- Skip Rest & Log Set 3 Now (High Visibility Primary Alternative) -->
+        <button class="w-full h-13 py-3.5 px-4 rounded-xl bg-[#B8F34A] hover:bg-[#A4DD3F] active:bg-[#92C735] text-[#0B0D0F] font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-md transition-colors" aria-label="Skip rest and enter next set">
+          <svg class="w-4 h-4 text-[#0B0D0F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19"></line>
+          </svg>
+          <span>SKIP REST &amp; START SET 3</span>
+        </button>
+
+        <!-- Secondary Subdued Action: Keep Timer Running but View Exercise Details / Edit Previous Set -->
+        <div class="grid grid-cols-2 gap-2">
+          <button class="h-11 rounded-xl bg-[#14181D] hover:bg-[#1A1F25] active:bg-[#20252A] border border-[#242A2F] text-xs font-semibold text-[#A8B0B7] hover:text-[#F5F7F8] flex items-center justify-center gap-1.5 transition-colors">
+            <svg class="w-3.5 h-3.5 text-[#707980]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>EDIT SET 2</span>
+          </button>
+          <button class="h-11 rounded-xl bg-[#14181D] hover:bg-[#1A1F25] active:bg-[#20252A] border border-[#242A2F] text-xs font-semibold text-[#A8B0B7] hover:text-[#F5F7F8] flex items-center justify-center gap-1.5 transition-colors">
+            <svg class="w-3.5 h-3.5 text-[#707980]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <span>ALL EXERCISES</span>
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Context Footer (Upcoming Exercise Preview — No Standard Tab Bar) -->
+    <footer class="p-3 bg-[#0B0D0F] border-t border-[#1C2126] z-30">
+      <div class="flex items-center justify-between text-xs px-1">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-[#707980] uppercase tracking-wider">UP NEXT (EX 2/7)</span>
+          <span class="text-xs font-semibold text-[#A8B0B7]">Incline Dumbbell Press</span>
+        </div>
+        <span class="text-[11px] font-mono font-medium text-[#707980]">3 × 8–10 reps</span>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

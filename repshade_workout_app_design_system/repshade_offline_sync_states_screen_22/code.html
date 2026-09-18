@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-variant": "#333537", "secondary-fixed-dim": "#c5c6cc", "surface-container-low": "#1a1c1e", "status-warning": "#F2C94C", "inverse-primary": "#486800", "status-success": "#6FD08C", "error": "#ffb4ab", "error-container": "#93000a", "on-secondary-fixed": "#191c20", "status-error": "#FF6B6B", "on-error-container": "#ffdad6", "on-tertiary-fixed-variant": "#42474d", "on-primary": "#233600", "on-tertiary-container": "#5f6469", "text-tertiary": "#707980", "primary-container": "#b8f34a", "primary": "#fcffec", "on-secondary-fixed-variant": "#44474c", "text-primary": "#F5F7F8", "inverse-surface": "#e2e2e5", "on-primary-container": "#4c6d00", "on-error": "#690005", "inverse-on-surface": "#2f3033", "primary-fixed": "#baf54c", "on-surface": "#e2e2e5", "background": "#121416", "accent-pressed": "#A4DD3F", "on-secondary": "#2e3135", "tertiary": "#fefdff", "border-strong": "#414A52", "outline": "#8d937c", "primary-fixed-dim": "#9fd830", "tertiary-fixed": "#dee3ea", "surface-container": "#1e2022", "surface-tertiary": "#191D21", "surface-container-high": "#282a2c", "text-secondary": "#A8B0B7", "on-primary-fixed-variant": "#354e00", "on-primary-fixed": "#131f00", "surface-tint": "#9fd830", "accent-soft": "#26331A", "surface-container-lowest": "#0c0e10", "secondary-fixed": "#e1e2e8", "status-info": "#6EA8FE", "surface": "#121416", "on-surface-variant": "#c3c9b0", "text-disabled": "#4D555B", "on-tertiary": "#2c3136", "on-background": "#e2e2e5", "tertiary-fixed-dim": "#c2c7cd", "border-subtle": "#242A2F", "on-tertiary-fixed": "#171c21", "secondary-container": "#44474c", "tertiary-container": "#dde1e8", "on-secondary-container": "#b3b5ba", "border-default": "#30373D", "secondary": "#c5c6cc", "surface-container-highest": "#333537", "surface-dim": "#121416", "outline-variant": "#434936", "surface-bright": "#38393c" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-lg": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "1rem", "space-xl": "2rem", "gutter-sm": "0.75rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1rem" }, fontFamily: { "display-hero": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "metric-md": ["Inter"], "body-md": ["Inter"], "label-md": ["Inter"], "metric-lg": ["Inter"], "caption": ["Inter"], "headline-lg": ["Inter"], "label-sm": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "display-hero-mobile": ["Inter"] }, fontSize: { "display-hero": ["36px", { lineHeight: "42px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["22px", { lineHeight: "28px", fontWeight: "700" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "metric-md": ["18px", { lineHeight: "24px", fontWeight: "700" }], "body-md": ["15px", { lineHeight: "22px", fontWeight: "400" }], "label-md": ["14px", { lineHeight: "18px", letterSpacing: "0.04em", fontWeight: "700" }], "metric-lg": ["24px", { lineHeight: "30px", letterSpacing: "-0.02em", fontWeight: "700" }], "caption": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "500" }], "headline-lg": ["28px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "display-hero-mobile": ["30px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }] } } } };</script><style>@layer base { html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-text-primary antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-label-md text-label-md tracking-wider uppercase text-text-primary">REPSHADE</span><span class="inline-block w-1.5 h-1.5 rounded-full bg-primary-container"></span></div><span class="font-caption text-caption text-text-tertiary uppercase">Home</span></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-tertiary"><span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span><span class="font-caption text-caption text-text-secondary uppercase">VAULT SYNCED</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full bg-surface pt-16 pb-20 px-margin flex flex-col relative"><div class="flex flex-col w-full space-y-space-lg pb-space-xl">
+<!-- Top System Header -->
+<section class="flex flex-col space-y-space-sm pt-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-tertiary text-text-tertiary font-label-sm text-label-sm tracking-wider uppercase">
+        LOCAL-FIRST ENGINE • ARCHITECTURE
+      </span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+<div class="flex flex-col space-y-space-xs">
+<h1 class="font-headline-md text-headline-md text-text-primary tracking-tight uppercase">
+        OFFLINE &amp; SYNC STATES
+      </h1>
+<p class="font-body-md text-body-md text-text-secondary leading-relaxed">
+        Zero data loss. Zero gym interruption. The training engine operates 100% on-device; cloud sync is purely secondary telemetry.
+      </p>
+</div>
+<!-- Live Telemetry Simulator Bar -->
+<div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-text-tertiary text-[18px]">network_ping</span>
+<span class="font-caption text-caption text-text-secondary uppercase">SIMULATOR:</span>
+<span class="font-label-sm text-label-sm text-primary-container uppercase font-bold" id="network-status-label">OFFLINE HARDWARE MODE</span>
+</div>
+<button class="px-space-sm py-1 rounded-lg bg-surface-tertiary hover:bg-surface-container-high transition-colors font-label-sm text-label-sm text-text-primary min-h-[36px] flex items-center gap-space-xs cursor-pointer active:scale-95" id="toggle-network-btn" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary-container" id="toggle-network-icon">wifi_off</span>
+<span id="toggle-network-text">SIMULATE ONLINE</span>
+</button>
+</div>
+<!-- Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto py-space-xs no-scrollbar">
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm uppercase tracking-wide whitespace-nowrap min-h-[44px] flex items-center justify-center transition-transform active:scale-95" data-filter="all" type="button">
+        All States
+      </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-tertiary text-text-secondary hover:text-text-primary font-label-sm text-label-sm uppercase tracking-wide whitespace-nowrap min-h-[44px] flex items-center justify-center transition-transform active:scale-95" data-filter="active" type="button">
+        Active Workout
+      </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-tertiary text-text-secondary hover:text-text-primary font-label-sm text-label-sm uppercase tracking-wide whitespace-nowrap min-h-[44px] flex items-center justify-center transition-transform active:scale-95" data-filter="chips" type="button">
+        Status Badges
+      </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-tertiary text-text-secondary hover:text-text-primary font-label-sm text-label-sm uppercase tracking-wide whitespace-nowrap min-h-[44px] flex items-center justify-center transition-transform active:scale-95" data-filter="vault" type="button">
+        Vault &amp; Cloud
+      </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-tertiary text-text-secondary hover:text-text-primary font-label-sm text-label-sm uppercase tracking-wide whitespace-nowrap min-h-[44px] flex items-center justify-center transition-transform active:scale-95" data-filter="recovery" type="button">
+        Sync Recovery
+      </button>
+</div>
+</section>
+<!-- Interactive Live Toast Demonstration Banner -->
+<div class="w-full p-space-md rounded-xl bg-surface-tertiary shadow-lg flex items-center justify-between transition-all duration-300" id="reconnect-toast">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px] text-text-tertiary" id="toast-icon">wifi_off</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wide truncate" id="toast-title">OFFLINE VAULT ACTIVE</span>
+<span class="font-caption text-caption text-text-tertiary truncate" id="toast-desc">Writing changes directly to SQLite local storage</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs flex-shrink-0">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-caption text-caption text-text-secondary font-bold" id="toast-indicator">CACHED</span>
+</div>
+</div>
+<!-- STATE 1: Active Workout Offline Status Banner & Action Card -->
+<article class="state-card flex flex-col space-y-space-md p-space-md rounded-xl bg-surface-container-low shadow-md" data-section="active">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-surface-tertiary text-text-tertiary font-label-sm text-label-sm uppercase">STATE 01</span>
+<span class="font-label-sm text-label-sm text-text-secondary uppercase">ACTIVE WORKOUT WORKFLOW</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+</div>
+<!-- Active Offline Hardware Bar -->
+<div class="p-space-sm rounded-lg bg-surface-tertiary flex flex-col space-y-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-text-tertiary">wifi_off</span>
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wider">OFFLINE • 100% GYM-READY</span>
+</div>
+<span class="font-caption text-caption text-primary-container px-space-xs py-0.5 rounded bg-accent-soft uppercase font-bold">ZERO LATENCY</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">
+        All sets, reps, weights, and rest timers recorded immediately to local device hardware storage. Zero network delay.
+      </p>
+</div>
+<!-- Simulated In-Workout Set Logger Card -->
+<div class="p-space-md rounded-xl bg-surface-tertiary flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-caption text-caption text-text-tertiary uppercase">EXERCISE 01 / 04</span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary uppercase">BARBELL BENCH PRESS</h2>
+</div>
+<div class="px-space-sm py-1 rounded bg-surface-container-high flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-text-tertiary">timer</span>
+<span class="font-metric-md text-metric-md text-text-primary">01:45</span>
+</div>
+</div>
+<!-- Set Rows Header -->
+<div class="grid grid-cols-12 gap-space-xs text-text-tertiary font-caption text-caption uppercase px-space-xs">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">PREV</span>
+<span class="col-span-3">KG</span>
+<span class="col-span-2">REPS</span>
+<span class="col-span-2 text-right">LOG</span>
+</div>
+<!-- Set 1 (Completed) -->
+<div class="grid grid-cols-12 gap-space-xs items-center p-space-xs rounded-lg bg-accent-soft">
+<span class="col-span-2 font-label-md text-label-md text-text-primary">01</span>
+<span class="col-span-3 font-body-sm text-body-sm text-text-tertiary">80.0 × 8</span>
+<div class="col-span-3 font-metric-md text-metric-md text-text-primary">82.5</div>
+<div class="col-span-2 font-metric-md text-metric-md text-text-primary">8</div>
+<div class="col-span-2 flex justify-end">
+<button aria-label="Set completed" class="w-11 h-11 rounded-lg bg-primary-container text-on-primary flex items-center justify-center transition-transform active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px] font-bold">check</span>
+</button>
+</div>
+</div>
+<!-- Set 2 (Active Target) -->
+<div class="grid grid-cols-12 gap-space-xs items-center p-space-xs rounded-lg bg-surface-container-high">
+<span class="col-span-2 font-label-md text-label-md text-text-primary">02</span>
+<span class="col-span-3 font-body-sm text-body-sm text-text-tertiary">82.5 × 6</span>
+<div class="col-span-3">
+<div class="px-space-xs py-1 rounded bg-surface-tertiary font-metric-md text-metric-md text-text-primary text-center">
+            85.0
+          </div>
+</div>
+<div class="col-span-2">
+<div class="px-space-xs py-1 rounded bg-surface-tertiary font-metric-md text-metric-md text-text-primary text-center">
+            6
+          </div>
+</div>
+<div class="col-span-2 flex justify-end">
+<button aria-label="Log current set" class="w-11 h-11 rounded-lg bg-surface-variant hover:bg-primary-container hover:text-on-primary text-text-primary flex items-center justify-center transition-all active:scale-95" id="demo-log-set-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</button>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button class="flex-1 min-h-[48px] rounded-lg bg-surface-container-high hover:bg-surface-variant font-label-md text-label-md text-text-primary uppercase tracking-wide flex items-center justify-center gap-space-xs active:scale-95" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+          ADD SET
+        </button>
+<button class="flex-1 min-h-[48px] rounded-lg bg-primary-container text-on-primary font-label-md text-label-md uppercase tracking-wide flex items-center justify-center gap-space-xs active:scale-95" type="button">
+          NEXT EXERCISE
+        </button>
+</div>
+</div>
+</article>
+<!-- STATE 2: Post-Workout Offline Completion Confirmation -->
+<article class="state-card flex flex-col space-y-space-md p-space-md rounded-xl bg-surface-container-low shadow-md" data-section="active">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-surface-tertiary text-text-tertiary font-label-sm text-label-sm uppercase">STATE 02</span>
+<span class="font-label-sm text-label-sm text-text-secondary uppercase">SESSION COMPLETION CONFIRMATION</span>
+</div>
+<span class="font-caption text-caption text-status-success uppercase font-bold">ENCRYPTED LOCALLY</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-tertiary flex flex-col space-y-space-md">
+<div class="flex items-start justify-between">
+<div class="flex flex-col space-y-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary-container">offline_pin</span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary uppercase">WORKOUT COMPLETE (OFFLINE)</h2>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">
+            Push #01 saved to local encrypted vault. Will sync automatically when network returns.
+          </p>
+</div>
+</div>
+<!-- Telemetry Breakdown Bento -->
+<div class="grid grid-cols-3 gap-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-caption text-caption text-text-tertiary uppercase">SETS LOGGED</span>
+<span class="font-metric-lg text-metric-lg text-text-primary mt-space-xs">16</span>
+<span class="font-caption text-caption text-status-success mt-0.5">100% On-Disk</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-caption text-caption text-text-tertiary uppercase">VOLUME</span>
+<span class="font-metric-lg text-metric-lg text-text-primary mt-space-xs">6,420</span>
+<span class="font-caption text-caption text-text-secondary mt-0.5">KG LIFTED</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-caption text-caption text-text-tertiary uppercase">RECORDS</span>
+<span class="font-metric-lg text-metric-lg text-primary-container mt-space-xs">+1 PR</span>
+<span class="font-caption text-caption text-primary-container mt-0.5">Bench Press</span>
+</div>
+</div>
+<!-- Safe Guarantee Assurance -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">shield</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-text-primary uppercase">SCHEDULE ADVANCED</span>
+<span class="font-caption text-caption text-text-tertiary truncate">Split advanced to Pull #02 locally. No internet needed.</span>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full min-h-[48px] rounded-xl bg-primary-container text-on-primary font-label-md text-label-md uppercase tracking-wide flex items-center justify-center gap-space-xs shadow active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px]">done_all</span>
+        DONE (RETURN TO DASHBOARD)
+      </button>
+</div>
+</article>
+<!-- STATE 3: Reusable Status Indicators & Telemetry Pills -->
+<article class="state-card flex flex-col space-y-space-md p-space-md rounded-xl bg-surface-container-low shadow-md" data-section="chips">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-surface-tertiary text-text-tertiary font-label-sm text-label-sm uppercase">STATE 03</span>
+<span class="font-label-sm text-label-sm text-text-secondary uppercase">PERSISTENT TELEMETRY PILLS</span>
+</div>
+<span class="font-caption text-caption text-text-tertiary uppercase">4 VARIANTS</span>
+</div>
+<div class="grid grid-cols-1 gap-space-xs">
+<!-- 1. Synced Pill -->
+<div class="p-space-sm rounded-lg bg-surface-tertiary flex items-center justify-between min-h-[44px]">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-status-success"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-status-success">check</span>
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wide">SYNCED</span>
+</div>
+</div>
+<span class="font-caption text-caption text-text-tertiary">JUST NOW</span>
+</div>
+<!-- 2. Syncing Pill -->
+<div class="p-space-sm rounded-lg bg-surface-tertiary flex items-center justify-between min-h-[44px]">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container animate-ping"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary-container animate-spin">sync</span>
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wide">SYNCING WORKOUT DATA…</span>
+</div>
+</div>
+<span class="font-caption text-caption text-primary-container uppercase font-bold">IN BACKGROUND</span>
+</div>
+<!-- 3. Offline Pill -->
+<div class="p-space-sm rounded-lg bg-surface-tertiary flex items-center justify-between min-h-[44px]">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-text-tertiary"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-text-tertiary">wifi_off</span>
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wide">OFFLINE</span>
+</div>
+</div>
+<span class="font-caption text-caption text-text-secondary uppercase font-semibold">SAVED LOCALLY</span>
+</div>
+<!-- 4. Sync Error Pill -->
+<div class="p-space-sm rounded-lg bg-surface-tertiary flex items-center justify-between min-h-[44px]">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-status-warning"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-status-warning">error_outline</span>
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wide">SYNC PENDING</span>
+</div>
+</div>
+<span class="font-caption text-caption text-status-warning uppercase font-semibold">DATA SAFE ON DEVICE</span>
+</div>
+</div>
+</article>
+<!-- STATE 4: Sync Error & Non-Alarming Recovery Card -->
+<article class="state-card flex flex-col space-y-space-md p-space-md rounded-xl bg-surface-container-low shadow-md" data-section="recovery">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-surface-tertiary text-text-tertiary font-label-sm text-label-sm uppercase">STATE 04</span>
+<span class="font-label-sm text-label-sm text-text-secondary uppercase">NON-ALARMING ERROR RECOVERY</span>
+</div>
+<span class="font-caption text-caption text-status-warning uppercase font-bold">SAFE RETRY</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-tertiary flex flex-col space-y-space-md">
+<div class="flex items-start gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[24px] text-status-warning">cloud_off</span>
+</div>
+<div class="flex flex-col space-y-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-text-primary uppercase">SYNC COULDN’T COMPLETE</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">
+            Your workout data is safely preserved in local storage. Automatic backup will resume when internet connectivity improves.
+          </p>
+</div>
+</div>
+<!-- Local Integrity Telemetry Gauge -->
+<div class="p-space-sm rounded-lg bg-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-status-success text-[18px]">verified_user</span>
+<span class="font-label-sm text-label-sm text-text-primary uppercase">SYNC FAILED ≠ WORKOUT LOST</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-surface-tertiary font-caption text-caption text-status-success font-bold uppercase">0 SETS IMPACTED</span>
+</div>
+<!-- Action Row -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button class="flex-1 min-h-[48px] rounded-lg bg-primary-container text-on-primary font-label-md text-label-md uppercase tracking-wide flex items-center justify-center gap-space-xs active:scale-95" id="retry-sync-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+<span id="retry-btn-text">TRY AGAIN</span>
+</button>
+<button class="flex-1 min-h-[48px] rounded-lg bg-surface-container-high hover:bg-surface-variant text-text-primary font-label-md text-label-md uppercase tracking-wide flex items-center justify-center gap-space-xs active:scale-95" type="button">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+          LOCAL VAULT
+        </button>
+</div>
+</div>
+</article>
+<!-- STATE 5: Profile Data Management (Cloud Sync Panel) -->
+<article class="state-card flex flex-col space-y-space-md p-space-md rounded-xl bg-surface-container-low shadow-md" data-section="vault">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-surface-tertiary text-text-tertiary font-label-sm text-label-sm uppercase">STATE 05</span>
+<span class="font-label-sm text-label-sm text-text-secondary uppercase">HARDWARE STORAGE &amp; VAULT</span>
+</div>
+<span class="font-caption text-caption text-primary-container uppercase font-bold">SQLITE ON-DEVICE</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-tertiary flex flex-col space-y-space-md">
+<!-- Sync Toggle Row -->
+<div class="flex items-center justify-between min-h-[44px]">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-text-primary uppercase">CLOUD SYNC</span>
+<span class="font-body-sm text-body-sm text-text-tertiary">Silent sync when network is reliable</span>
+</div>
+<button aria-label="Toggle cloud sync" class="w-12 h-7 rounded-full bg-primary-container p-1 transition-colors flex items-center justify-end" id="cloud-toggle" type="button">
+<div class="w-5 h-5 rounded-full bg-on-primary shadow-sm"></div>
+</button>
+</div>
+<!-- Vault Telemetry Table -->
+<div class="flex flex-col space-y-space-xs pt-space-xs">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-text-tertiary">storage</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Vault Status</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-primary">42 Sessions (1.4 MB)</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-text-tertiary">cloud_upload</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Last Network Sync</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-primary">Today, 11:42 AM</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-text-tertiary">offline_bolt</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Pending Local Uploads</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary-container font-bold">2 Sessions Queued</span>
+</div>
+</div>
+<!-- Sync Now Trigger -->
+<div class="pt-space-xs flex gap-space-sm">
+<button class="w-full min-h-[48px] rounded-lg bg-surface-container-high hover:bg-surface-variant text-text-primary font-label-md text-label-md uppercase tracking-wide flex items-center justify-center gap-space-xs active:scale-95" id="sync-now-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+          SYNC VAULT NOW
+        </button>
+</div>
+</div>
+</article>
+<!-- Golden UX Rules Card -->
+<article class="p-space-md rounded-xl bg-surface-container-low flex flex-col space-y-space-md shadow-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[20px]">military_tech</span>
+<h3 class="font-headline-sm text-headline-sm text-text-primary uppercase tracking-wide">REPSHADE GOLDEN OFFLINE RULES</h3>
+</div>
+<div class="flex flex-col space-y-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-status-success text-[18px] mt-0.5">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-primary uppercase font-bold">ZERO GUILT &amp; ZERO BLOCKING MODALS</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Never display "You must be online to train". Never prevent set logging.</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-status-success text-[18px] mt-0.5">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-primary uppercase font-bold">HARDWARE STORAGE IS SOURCE OF TRUTH</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Weights and sets commit to local disk first. Background sync happens whenever ready.</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-status-success text-[18px] mt-0.5">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-primary uppercase font-bold">SEAMLESS UNHURRIED FEEDBACK</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Quiet toasts replace modal interruptions so lifters stay strictly focused on their lifts.</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+<script>
+  (function initOfflineShowcase() {
+    let isOnline = false;
+    const filterButtons = document.querySelectorAll('.filter-pill');
+    const stateCards = document.querySelectorAll('.state-card');
+    const networkStatusLabel = document.getElementById('network-status-label');
+    const toggleNetworkBtn = document.getElementById('toggle-network-btn');
+    const toggleNetworkIcon = document.getElementById('toggle-network-icon');
+    const toggleNetworkText = document.getElementById('toggle-network-text');
+    const toastBanner = document.getElementById('reconnect-toast');
+    const toastIcon = document.getElementById('toast-icon');
+    const toastTitle = document.getElementById('toast-title');
+    const toastDesc = document.getElementById('toast-desc');
+    const toastIndicator = document.getElementById('toast-indicator');
+    const demoLogSetBtn = document.getElementById('demo-log-set-btn');
+    const retrySyncBtn = document.getElementById('retry-sync-btn');
+    const retryBtnText = document.getElementById('retry-btn-text');
+    const syncNowBtn = document.getElementById('sync-now-btn');
+    const cloudToggle = document.getElementById('cloud-toggle');
+
+    // 1. Filtering behavior
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+        filterButtons.forEach((b) => {
+          b.classList.remove('bg-primary-container', 'text-on-primary');
+          b.classList.add('bg-surface-tertiary', 'text-text-secondary');
+        });
+        btn.classList.remove('bg-surface-tertiary', 'text-text-secondary');
+        btn.classList.add('bg-primary-container', 'text-on-primary');
+
+        stateCards.forEach((card) => {
+          const section = card.getAttribute('data-section');
+          if (filter === 'all' || section === filter) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
+
+    // 2. Network Toggle Simulator
+    toggleNetworkBtn.addEventListener('click', () => {
+      isOnline = !isOnline;
+      if (isOnline) {
+        networkStatusLabel.textContent = 'ONLINE (CELLULAR / WI-FI)';
+        networkStatusLabel.classList.remove('text-primary-container');
+        networkStatusLabel.classList.add('text-status-success');
+        toggleNetworkIcon.textContent = 'wifi';
+        toggleNetworkText.textContent = 'SIMULATE OFFLINE';
+
+        // Update Live Toast to Reconnecting / Synced
+        toastIcon.textContent = 'sync';
+        toastIcon.classList.add('animate-spin');
+        toastTitle.textContent = 'CONNECTION RESTORED';
+        toastDesc.textContent = 'Syncing 2 pending sessions quietly in background...';
+        toastIndicator.textContent = 'SYNCING';
+
+        setTimeout(() => {
+          toastIcon.classList.remove('animate-spin');
+          toastIcon.textContent = 'done_all';
+          toastIcon.classList.add('text-status-success');
+          toastTitle.textContent = 'ALL WORKOUTS SYNCED';
+          toastDesc.textContent = 'Local vault mirrors encrypted cloud record.';
+          toastIndicator.textContent = 'VERIFIED';
+        }, 1200);
+      } else {
+        networkStatusLabel.textContent = 'OFFLINE HARDWARE MODE';
+        networkStatusLabel.classList.remove('text-status-success');
+        networkStatusLabel.classList.add('text-primary-container');
+        toggleNetworkIcon.textContent = 'wifi_off';
+        toggleNetworkText.textContent = 'SIMULATE ONLINE';
+
+        toastIcon.classList.remove('animate-spin', 'text-status-success');
+        toastIcon.textContent = 'wifi_off';
+        toastTitle.textContent = 'OFFLINE VAULT ACTIVE';
+        toastDesc.textContent = 'Writing changes directly to SQLite local storage';
+        toastIndicator.textContent = 'CACHED';
+      }
+    });
+
+    // 3. Demo Set Log Button Interaction
+    if (demoLogSetBtn) {
+      demoLogSetBtn.addEventListener('click', () => {
+        demoLogSetBtn.classList.remove('bg-surface-variant', 'text-text-primary');
+        demoLogSetBtn.classList.add('bg-primary-container', 'text-on-primary');
+        toastTitle.textContent = 'SET SAVED LOCALLY';
+        toastDesc.textContent = 'Set 02 (85kg × 6) written to disk (0ms delay).';
+        toastIndicator.textContent = 'COMMITTED';
+      });
+    }
+
+    // 4. Retry Sync Trigger
+    if (retrySyncBtn) {
+      retrySyncBtn.addEventListener('click', () => {
+        retryBtnText.textContent = 'CONNECTING...';
+        retrySyncBtn.classList.add('opacity-75');
+        setTimeout(() => {
+          retryBtnText.textContent = 'TRY AGAIN';
+          retrySyncBtn.classList.remove('opacity-75');
+          toastTitle.textContent = 'RETRY SCHEDULED';
+          toastDesc.textContent = 'Telemetry engine will retry when connection stabilizes.';
+          toastIndicator.textContent = 'QUEUED';
+        }, 800);
+      });
+    }
+
+    // 5. Sync Now Trigger
+    if (syncNowBtn) {
+      syncNowBtn.addEventListener('click', () => {
+        syncNowBtn.textContent = 'VERIFYING VAULT INTEGRITY...';
+        setTimeout(() => {
+          syncNowBtn.textContent = 'VAULT VERIFIED & READY';
+          setTimeout(() => {
+            syncNowBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">sync</span> SYNC VAULT NOW';
+          }, 1400);
+        }, 600);
+      });
+    }
+
+    // 6. Cloud Sync Toggle
+    if (cloudToggle) {
+      let enabled = true;
+      cloudToggle.addEventListener('click', () => {
+        enabled = !enabled;
+        if (enabled) {
+          cloudToggle.classList.remove('bg-surface-container-high', 'justify-start');
+          cloudToggle.classList.add('bg-primary-container', 'justify-end');
+        } else {
+          cloudToggle.classList.remove('bg-primary-container', 'justify-end');
+          cloudToggle.classList.add('bg-surface-container-high', 'justify-start');
+        }
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.12)]" data-active-classes="text-primary-container"><div class="flex items-stretch justify-around h-16 px-space-xs"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] flex-1 transition-colors text-primary-container" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">fitness_center</span><span class="font-caption text-caption tracking-tight uppercase mt-space-xs">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] flex-1 text-text-tertiary hover:text-text-primary transition-colors" data-path="plan" href="#"><span class="material-symbols-outlined text-[22px]">calendar_today</span><span class="font-caption text-caption tracking-tight uppercase mt-space-xs">Plan</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] flex-1 text-text-tertiary hover:text-text-primary transition-colors" data-path="progress" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-caption text-caption tracking-tight uppercase mt-space-xs">Progress</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] flex-1 text-text-tertiary hover:text-text-primary transition-colors" data-path="history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption tracking-tight uppercase mt-space-xs">History</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] flex-1 text-text-tertiary hover:text-text-primary transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[22px]">person</span><span class="font-caption text-caption tracking-tight uppercase mt-space-xs">Profile</span></a></div></nav></body></html>

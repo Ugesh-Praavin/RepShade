@@ -1,0 +1,403 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'on-error': '#690005', 'surface-tertiary': '#191D21', 'on-secondary-fixed-variant': '#44474c', 'surface': '#121416', 'surface-tint': '#9fd830', 'surface-bright': '#38393c', 'on-tertiary-fixed-variant': '#42474d', 'on-primary': '#233600', 'tertiary': '#fefdff', 'accent-soft': '#26331A', 'border-strong': '#414A52', 'error': '#ffb4ab', 'border-default': '#30373D', 'text-disabled': '#4D555B', 'on-surface': '#e2e2e5', 'primary-container': '#b8f34a', 'outline-variant': '#434936', 'on-tertiary-fixed': '#171c21', 'primary-fixed-dim': '#9fd830', 'secondary-fixed': '#e1e2e8', 'accent-pressed': '#A4DD3F', 'background': '#121416', 'secondary-container': '#44474c', 'surface-container-low': '#1a1c1e', 'on-primary-container': '#4c6d00', 'tertiary-fixed-dim': '#c2c7cd', 'error-container': '#93000a', 'surface-container-high': '#282a2c', 'on-background': '#e2e2e5', 'status-success': '#6FD08C', 'inverse-on-surface': '#2f3033', 'inverse-primary': '#486800', 'surface-container-highest': '#333537', 'text-secondary': '#A8B0B7', 'inverse-surface': '#e2e2e5', 'on-primary-fixed-variant': '#354e00', 'status-info': '#6EA8FE', 'status-error': '#FF6B6B', 'on-error-container': '#ffdad6', 'secondary': '#c5c6cc', 'primary': '#fcffec', 'on-secondary-container': '#b3b5ba', 'on-secondary-fixed': '#191c20', 'border-subtle': '#242A2F', 'on-secondary': '#2e3135', 'surface-dim': '#121416', 'primary-fixed': '#baf54c', 'on-primary-fixed': '#131f00', 'surface-container-lowest': '#0c0e10', 'on-surface-variant': '#c3c9b0', 'status-warning': '#F2C94C', 'surface-variant': '#333537', 'surface-container': '#1e2022', 'on-tertiary-container': '#5f6469', 'secondary-fixed-dim': '#c5c6cc', 'outline': '#8d937c', 'tertiary-fixed': '#dee3ea', 'tertiary-container': '#dde1e8', 'text-tertiary': '#707980', 'text-primary': '#F5F7F8', 'on-tertiary': '#2c3136' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'gutter': '1rem', 'gutter-sm': '0.75rem', 'space-lg': '1.5rem', 'margin': '1rem', 'margin-lg': '1.5rem', 'space-md': '1rem', 'space-sm': '0.5rem', 'space-xl': '2rem', 'space-xs': '0.25rem' }, fontFamily: { 'label-sm': ['Inter'], 'metric-md': ['Inter'], 'metric-lg': ['Inter'], 'headline-sm': ['Inter'], 'caption': ['Inter'], 'body-lg': ['Inter'], 'label-md': ['Inter'], 'body-sm': ['Inter'], 'body-md': ['Inter'], 'headline-lg': ['Inter'], 'headline-md': ['Inter'], 'display-hero-mobile': ['Inter'], 'display-hero': ['Inter'] }, fontSize: { 'label-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }], 'metric-md': ['18px', { lineHeight: '24px', fontWeight: '700' }], 'metric-lg': ['24px', { lineHeight: '30px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }], 'caption': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '500' }], 'label-md': ['14px', { lineHeight: '18px', letterSpacing: '0.04em', fontWeight: '700' }], 'body-sm': ['13px', { lineHeight: '18px', fontWeight: '400' }], 'body-md': ['15px', { lineHeight: '22px', fontWeight: '400' }], 'headline-lg': ['28px', { lineHeight: '34px', letterSpacing: '-0.01em', fontWeight: '700' }], 'headline-md': ['22px', { lineHeight: '28px', fontWeight: '700' }], 'display-hero-mobile': ['30px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '700' }], 'display-hero': ['36px', { lineHeight: '42px', letterSpacing: '-0.02em', fontWeight: '700' }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #121416; } body { overscroll-behavior: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col antialiased"><main class="flex flex-col relative w-full px-gutter pt-safe pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full pb-8 pt-space-sm">
+<!-- Status Strip (Telemetry & Offline State) -->
+<div class="flex items-center justify-between py-space-xs px-gutter-sm bg-surface-container-lowest rounded mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-caption text-caption text-text-tertiary tracking-wider uppercase">OFFLINE READY</span>
+<span class="text-border-strong text-[10px]">•</span>
+<span class="font-caption text-caption text-text-tertiary tracking-wider uppercase">LOCAL SQLITE SYNCED</span>
+</div>
+<span class="font-caption text-caption text-text-tertiary tabular-nums">0 ms LATENCY</span>
+</div>
+<!-- Clean Top Navigation Bar -->
+<div class="flex items-center justify-between py-space-xs mb-space-md">
+<a class="inline-flex items-center gap-space-xs text-text-secondary hover:text-text-primary transition-colors py-space-xs min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+<span class="font-label-md text-label-md tracking-wider uppercase text-text-primary">EXERCISE PROGRESS</span>
+</a>
+<button aria-label="Session Filter Options" class="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+<!-- Exercise Title Card -->
+<div class="bg-surface-container-low p-margin rounded-xl mb-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-caption text-caption text-text-tertiary uppercase tracking-wider">CHEST • ANTERIOR DELTOIDS • TRICEPS</span>
+<span class="font-caption text-caption bg-surface-tertiary text-text-secondary px-space-xs py-0.5 rounded uppercase tracking-wider">LOGGED</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-text-primary tracking-tight uppercase mb-space-xs">BARBELL BENCH PRESS</h2>
+<div class="flex items-center gap-space-xs">
+<span class="font-caption text-caption text-primary-container uppercase tracking-wider font-semibold">CANONICAL COMPOUND</span>
+<span class="text-text-disabled text-[10px]">•</span>
+<span class="font-caption text-caption text-text-secondary">18 BOUTS AUDITED</span>
+</div>
+</div>
+<!-- Summary Metric Strip (3-Column Hardware Telemetry with Total Reps) -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low p-space-xs rounded-xl mb-space-md">
+<div class="bg-surface-tertiary p-space-sm rounded-lg flex flex-col justify-between">
+<span class="font-caption text-caption text-text-tertiary uppercase tracking-wider">TOTAL BOUTS</span>
+<div class="mt-space-xs">
+<span class="font-metric-lg text-metric-lg text-text-primary tabular-nums">18</span>
+<span class="font-caption text-caption text-text-disabled block">sessions</span>
+</div>
+</div>
+<div class="bg-surface-tertiary p-space-sm rounded-lg flex flex-col justify-between">
+<span class="font-caption text-caption text-text-tertiary uppercase tracking-wider">TOTAL REPS</span>
+<div class="mt-space-xs">
+<span class="font-metric-lg text-metric-lg text-text-primary tabular-nums block">145</span>
+<span class="font-caption text-caption text-text-disabled block">recorded reps</span>
+</div>
+</div>
+<div class="bg-surface-tertiary p-space-sm rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-text-tertiary uppercase tracking-wider">PEAK LOAD</span>
+<span class="font-caption text-[10px] px-1 bg-accent-soft text-primary-container rounded uppercase font-bold">PR</span>
+</div>
+<div class="mt-space-xs">
+<span class="font-metric-md text-metric-md text-primary-container tabular-nums">82.5 <span class="font-caption text-caption text-text-secondary font-normal">KG</span></span>
+<span class="font-caption text-caption text-text-secondary block">× 8 reps</span>
+</div>
+</div>
+</div>
+<!-- Time Scope Filter Strip -->
+<div class="flex items-center justify-between gap-space-sm mb-space-xs">
+<div class="grid grid-cols-4 gap-space-xs p-space-xs bg-surface-container-low rounded-lg w-full max-w-[260px]">
+<button class="py-1 px-space-xs text-center rounded font-label-sm text-label-sm text-text-tertiary hover:text-text-primary transition-colors">30D</button>
+<button class="py-1 px-space-xs text-center rounded font-label-sm text-label-sm text-text-tertiary hover:text-text-primary transition-colors">3M</button>
+<button class="py-1 px-space-xs text-center rounded font-label-sm text-label-sm text-text-tertiary hover:text-text-primary transition-colors">1Y</button>
+<button class="py-1 px-space-xs text-center rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold shadow-sm">ALL</button>
+</div>
+<span class="font-caption text-caption text-text-tertiary tracking-tight text-right shrink-0">18 Sessions</span>
+</div>
+<!-- Historical Sessions List -->
+<div class="flex flex-col gap-space-sm mt-space-sm" id="session-log-stack">
+<!-- SESSION 1: EXPANDED (Latest Record & PR) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm" data-session-card="">
+<div class="p-margin flex items-center justify-between cursor-pointer bg-surface-container hover:bg-surface-bright/20 transition-colors" data-toggle="">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-text-primary tracking-wide tabular-nums">14 SEP 2026</span>
+<span class="px-space-xs py-0.5 rounded bg-accent-soft text-primary-container font-caption text-caption font-semibold tracking-wider uppercase">RECENT PR</span>
+</div>
+<span class="font-caption text-caption text-text-secondary truncate mt-0.5">Push A • Workout #48</span>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<div class="text-right hidden sm:block">
+<span class="font-caption text-caption text-text-tertiary block">1,965 kg</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary transition-transform duration-200 rotate-180" data-chevron="">expand_more</span>
+</div>
+</div>
+<div class="p-margin flex flex-col gap-space-md" data-body="">
+<!-- Table Representation with Enhanced Set Value Readability -->
+<div class="flex flex-col rounded-lg overflow-hidden bg-surface-tertiary">
+<div class="grid grid-cols-12 py-space-xs px-space-sm bg-surface-container text-text-tertiary font-caption text-caption uppercase tracking-wider">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">WEIGHT</span>
+<span class="col-span-3">REPS</span>
+<span class="col-span-4 text-right">BENCHMARK</span>
+</div>
+<!-- Set 1 -->
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center hover:bg-surface-bright/10 transition-colors">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">80.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-tertiary">Match Baseline</span>
+</div>
+<!-- Set 2 (PR Highlighted) -->
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center bg-accent-soft text-text-primary">
+<span class="col-span-2 font-label-md text-label-md text-primary-container font-bold tabular-nums">02</span>
+<span class="col-span-3 font-metric-md text-metric-md text-primary-container tabular-nums font-bold">82.5 <span class="font-caption text-caption text-primary-container/90 font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-primary-container tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-primary-container font-semibold tracking-wide uppercase">+2.5 kg PR</span>
+</div>
+<!-- Set 3 -->
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center hover:bg-surface-bright/10 transition-colors">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">03</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">82.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Load Sustained</span>
+</div>
+</div>
+<!-- Session Summary Row -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container text-text-secondary font-caption text-caption">
+<div class="flex items-center gap-space-sm">
+<span class="text-text-primary font-bold tabular-nums">1,965 KG</span>
+<span class="text-text-disabled">•</span>
+<span class="">3 Working Sets</span>
+</div>
+<span class="font-caption text-caption text-text-tertiary">Mean RIR 1.5</span>
+</div>
+<!-- Technical Field Note -->
+<div class="p-space-sm rounded-lg bg-surface-tertiary text-body-sm font-body-sm text-text-secondary">
+<span class="font-caption text-caption text-text-tertiary uppercase block mb-1">SESSION LOG NOTE</span>
+          "Felt strong off the chest. Paused rep 1 on Set 2. Lockout stable with zero shoulder impingement."
+        </div>
+</div>
+</div>
+<!-- SESSION 2: COLLAPSED -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm" data-session-card="">
+<div class="p-margin flex items-center justify-between cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors" data-toggle="">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-text-primary tracking-wide tabular-nums">10 SEP 2026</span>
+<span class="font-caption text-caption text-text-tertiary uppercase">Push A</span>
+</div>
+<span class="font-caption text-caption text-text-secondary truncate mt-0.5">Best: 80.0 kg × 8 • 3 Sets • 1,900 kg volume</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary transition-transform duration-200" data-chevron="">expand_more</span>
+</div>
+<div class="p-margin hidden flex-col gap-space-md" data-body="">
+<div class="flex flex-col rounded-lg overflow-hidden bg-surface-tertiary">
+<div class="grid grid-cols-12 py-space-xs px-space-sm bg-surface-container text-text-tertiary font-caption text-caption uppercase tracking-wider">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">WEIGHT</span>
+<span class="col-span-3">REPS</span>
+<span class="col-span-4 text-right">BENCHMARK</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">80.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Solid Baseline</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">02</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">80.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Consistent</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">03</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">77.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-tertiary">Fatigue Drop</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SESSION 3: EXPANDED (Demonstrating Volume and Micro-variations) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm" data-session-card="">
+<div class="p-margin flex items-center justify-between cursor-pointer bg-surface-container hover:bg-surface-bright/20 transition-colors" data-toggle="">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-text-primary tracking-wide tabular-nums">06 SEP 2026</span>
+<span class="font-caption text-caption text-text-tertiary uppercase">Workout #44</span>
+</div>
+<span class="font-caption text-caption text-text-secondary truncate mt-0.5">Push A • 3 Working Sets Logged</span>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<div class="text-right hidden sm:block">
+<span class="font-caption text-caption text-text-tertiary block">1,825 kg</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary transition-transform duration-200 rotate-180" data-chevron="">expand_more</span>
+</div>
+</div>
+<div class="p-margin flex flex-col gap-space-md" data-body="">
+<div class="flex flex-col rounded-lg overflow-hidden bg-surface-tertiary">
+<div class="grid grid-cols-12 py-space-xs px-space-sm bg-surface-container text-text-tertiary font-caption text-caption uppercase tracking-wider">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">WEIGHT</span>
+<span class="col-span-3">REPS</span>
+<span class="col-span-4 text-right">BENCHMARK</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center hover:bg-surface-bright/10 transition-colors">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">77.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Clean Form</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center hover:bg-surface-bright/10 transition-colors">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">02</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">77.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Standard</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center hover:bg-surface-bright/10 transition-colors">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">03</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">75.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">10</span>
+<span class="col-span-4 text-right font-caption text-caption text-status-info font-medium">Density Set</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container text-text-secondary font-caption text-caption">
+<div class="flex items-center gap-space-sm">
+<span class="text-text-primary font-bold tabular-nums">1,825 KG</span>
+<span class="text-text-disabled">•</span>
+<span class="">3 Working Sets</span>
+</div>
+<span class="font-caption text-caption text-text-tertiary">Mean RIR 2.0</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-tertiary text-body-sm font-body-sm text-text-secondary">
+<span class="font-caption text-caption text-text-tertiary uppercase block mb-1">SESSION LOG NOTE</span>
+          "Slight fatigue on right wrist. Switched to narrower grip for Set 3. Good burn."
+        </div>
+</div>
+</div>
+<!-- SESSION 4: COLLAPSED -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm" data-session-card="">
+<div class="p-margin flex items-center justify-between cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors" data-toggle="">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-text-primary tracking-wide tabular-nums">02 SEP 2026</span>
+<span class="font-caption text-caption text-text-tertiary uppercase">Push A</span>
+</div>
+<span class="font-caption text-caption text-text-secondary truncate mt-0.5">Best: 77.5 kg × 8 • 3 Sets • 1,860 kg volume</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary transition-transform duration-200" data-chevron="">expand_more</span>
+</div>
+<div class="p-margin hidden flex-col gap-space-md" data-body="">
+<div class="flex flex-col rounded-lg overflow-hidden bg-surface-tertiary">
+<div class="grid grid-cols-12 py-space-xs px-space-sm bg-surface-container text-text-tertiary font-caption text-caption uppercase tracking-wider">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">WEIGHT</span>
+<span class="col-span-3">REPS</span>
+<span class="col-span-4 text-right">BENCHMARK</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">77.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Baseline</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">02</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">77.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Consistent</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">03</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">77.5 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Complete</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SESSION 5: COLLAPSED (PR Milestone Achieved) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm" data-session-card="">
+<div class="p-margin flex items-center justify-between cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors" data-toggle="">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-text-primary tracking-wide tabular-nums">28 AUG 2026</span>
+<span class="px-space-xs py-0.2 rounded bg-accent-soft text-primary-container font-caption text-[10px] font-bold tracking-wider uppercase">80KG PR</span>
+</div>
+<span class="font-caption text-caption text-text-secondary truncate mt-0.5">Best: 80.0 kg × 6 • 3 Sets • 1,840 kg volume</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary transition-transform duration-200" data-chevron="">expand_more</span>
+</div>
+<div class="p-margin hidden flex-col gap-space-md" data-body="">
+<div class="flex flex-col rounded-lg overflow-hidden bg-surface-tertiary">
+<div class="grid grid-cols-12 py-space-xs px-space-sm bg-surface-container text-text-tertiary font-caption text-caption uppercase tracking-wider">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">WEIGHT</span>
+<span class="col-span-3">REPS</span>
+<span class="col-span-4 text-right">BENCHMARK</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center bg-accent-soft text-text-primary">
+<span class="col-span-2 font-label-md text-label-md text-primary-container tabular-nums font-bold">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-primary-container tabular-nums font-bold">80.0 <span class="font-caption text-caption text-primary-container/80 font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-primary-container tabular-nums font-bold">6</span>
+<span class="col-span-4 text-right font-caption text-caption text-primary-container uppercase font-semibold">Milestone PR</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">75.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Back-off</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">03</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">75.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Back-off</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SESSION 6: COLLAPSED -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm" data-session-card="">
+<div class="p-margin flex items-center justify-between cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors" data-toggle="">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-text-primary tracking-wide tabular-nums">24 AUG 2026</span>
+<span class="font-caption text-caption text-text-tertiary uppercase">Push A</span>
+</div>
+<span class="font-caption text-caption text-text-secondary truncate mt-0.5">Best: 75.0 kg × 8 • 3 Sets • 1,800 kg volume</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary transition-transform duration-200" data-chevron="">expand_more</span>
+</div>
+<div class="p-margin hidden flex-col gap-space-md" data-body="">
+<div class="flex flex-col rounded-lg overflow-hidden bg-surface-tertiary">
+<div class="grid grid-cols-12 py-space-xs px-space-sm bg-surface-container text-text-tertiary font-caption text-caption uppercase tracking-wider">
+<span class="col-span-2">SET</span>
+<span class="col-span-3">WEIGHT</span>
+<span class="col-span-3">REPS</span>
+<span class="col-span-4 text-right">BENCHMARK</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">01</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">75.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Consistent</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">02</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">75.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Consistent</span>
+</div>
+<div class="grid grid-cols-12 py-space-sm px-space-sm items-center">
+<span class="col-span-2 font-label-md text-label-md text-text-secondary tabular-nums">03</span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">75.0 <span class="font-caption text-caption text-text-secondary font-medium">KG</span></span>
+<span class="col-span-3 font-metric-md text-metric-md text-text-primary tabular-nums font-bold">8</span>
+<span class="col-span-4 text-right font-caption text-caption text-text-secondary">Consistent</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- User-Facing History Preservation Card -->
+<div class="mt-space-lg p-margin rounded-xl bg-surface-container-low shadow-sm flex items-start gap-space-md">
+<div class="p-space-xs rounded-lg bg-surface-tertiary text-primary-container shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-primary uppercase tracking-wider mb-1">HISTORY IS PRESERVED</span>
+<p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
+        Completed workouts keep the exact performance recorded at the time. Changes to your plan won't rewrite past workouts.
+      </p>
+</div>
+</div>
+<!-- Client-side Accordion Control -->
+<script>
+    document.querySelectorAll('[data-session-card]').forEach(card => {
+      const toggle = card.querySelector('[data-toggle]');
+      const body = card.querySelector('[data-body]');
+      const chevron = card.querySelector('[data-chevron]');
+
+      if (toggle && body && chevron) {
+        toggle.addEventListener('click', () => {
+          const isCollapsed = body.classList.contains('hidden');
+          if (isCollapsed) {
+            body.classList.remove('hidden');
+            body.classList.add('flex');
+            chevron.classList.add('rotate-180');
+            toggle.classList.remove('bg-surface-container-low');
+            toggle.classList.add('bg-surface-container');
+          } else {
+            body.classList.add('hidden');
+            body.classList.remove('flex');
+            chevron.classList.remove('rotate-180');
+            toggle.classList.add('bg-surface-container-low');
+            toggle.classList.remove('bg-surface-container');
+          }
+        });
+      }
+    });
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.2)]" data-active-classes="text-primary-container"><div class="h-16 px-gutter-sm flex items-center justify-around"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs transition-colors text-primary-container" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">dashboard</span><span class="font-caption text-caption tracking-wide">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-text-tertiary transition-colors" data-path="plan" href="#"><span class="material-symbols-outlined text-[22px]">calendar_today</span><span class="font-caption text-caption tracking-wide">Plan</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-text-tertiary transition-colors" data-path="progress" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-caption text-caption tracking-wide">Progress</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-text-tertiary transition-colors" data-path="history" href="#"><span class="material-symbols-outlined text-[22px]">schedule</span><span class="font-caption text-caption tracking-wide">History</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-text-tertiary transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[22px]">person</span><span class="font-caption text-caption tracking-wide">Profile</span></a></div></nav>
+
+</body></html>

@@ -1,0 +1,43 @@
+name: RepShade Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Lint, Typecheck & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: Repshade/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd Repshade
+          npm ci
+
+      - name: Run TypeScript Type Checker
+        run: |
+          cd Repshade
+          npx tsc --noEmit
+
+      - name: Run ESLint
+        run: |
+          cd Repshade
+          npm run lint --if-present
+
+      - name: Run Unit Tests
+        run: |
+          cd Repshade
+          npm test --if-present

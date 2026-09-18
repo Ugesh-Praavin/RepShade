@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#0B0D0F]">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Repshade — Onboarding (Screen 14)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bg: {
+              primary: '#0B0D0F',
+              secondary: '#121519',
+              tertiary: '#191D21',
+              elevated: '#20252A',
+            },
+            border: {
+              subtle: '#242A2F',
+              default: '#30373D',
+              strong: '#414A52',
+            },
+            accent: {
+              primary: '#B8F34A',
+              pressed: '#A4DD3F',
+              soft: '#26331A',
+            },
+            content: {
+              primary: '#F5F7F8',
+              secondary: '#A8B0B7',
+              tertiary: '#707980',
+              disabled: '#4D555B',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Mobile app viewport container emulation */
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: manipulation;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="h-full bg-[#0B0D0F] text-[#F5F7F8] flex flex-col items-center justify-start sm:py-6 select-none font-sans">
+
+  <!-- Mobile Screen Frame (390px x 844px style standard device) -->
+  <div class="relative w-full max-w-[420px] h-full sm:h-[844px] sm:max-h-[90vh] bg-[#0B0D0F] sm:border sm:border-[#242A2F] sm:rounded-[36px] flex flex-col shadow-2xl overflow-hidden">
+    
+    <!-- Top System Safe Area / Header Bar -->
+    <header class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#242A2F]/80 bg-[#0B0D0F] z-20 shrink-0">
+      <!-- Back Action -->
+      <button id="btn-back" onclick="navigateStep(-1)" class="flex items-center gap-2 text-[#A8B0B7] hover:text-[#F5F7F8] active:text-[#B8F34A] transition-colors py-2 -ml-1 pr-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#B8F34A]">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span class="text-xs font-mono uppercase tracking-widest font-bold">BACK</span>
+      </button>
+
+      <!-- Step Counter Badge -->
+      <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#191D21] border border-[#242A2F]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#B8F34A]"></span>
+        <span id="step-indicator-text" class="text-[11px] font-mono font-bold tracking-wider text-[#A8B0B7]">STEP 1 OF 4</span>
+      </div>
+
+      <!-- Skip Button (if applicable) -->
+      <button id="btn-skip" onclick="navigateStep(1)" class="text-xs font-mono uppercase tracking-wider text-[#707980] hover:text-[#A8B0B7] active:text-[#F5F7F8] py-2 pl-3 -mr-1 transition-colors">
+        SKIP
+      </button>
+    </header>
+
+    <!-- Progress Track (Slim 2px bar) -->
+    <div class="w-full bg-[#191D21] h-[3px] shrink-0 overflow-hidden">
+      <div id="progress-bar-fill" class="h-full bg-[#B8F34A] transition-all duration-300 ease-out" style="width: 25%;"></div>
+    </div>
+
+    <!-- Main Content Container with Slide/Fade Sections -->
+    <main class="flex-1 overflow-y-auto px-5 py-6 flex flex-col justify-between custom-scrollbar">
+
+      <!-- ============================================== -->
+      <!-- STEP 1: ATHLETE NAME                           -->
+      <!-- ============================================== -->
+      <section id="step-1" class="step-view flex flex-col h-full justify-between">
+        <div>
+          <!-- Eyebrow -->
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-[#B8F34A] font-bold">ONBOARDING · 01</span>
+          </div>
+          
+          <h1 class="text-2xl sm:text-[26px] font-extrabold tracking-tight text-[#F5F7F8] leading-tight mb-2">
+            WHAT SHOULD WE CALL YOU?
+          </h1>
+          <p class="text-sm text-[#A8B0B7] leading-relaxed mb-6">
+            Your name will be used across your training logs, personal records, and session summaries.
+          </p>
+
+          <!-- Input Card -->
+          <div class="bg-[#121519] border border-[#242A2F] rounded-xl p-4 focus-within:border-[#B8F34A]/70 transition-all">
+            <div class="flex justify-between items-center mb-2">
+              <label for="input-athlete-name" class="text-xs font-mono uppercase tracking-wider text-[#A8B0B7] font-semibold">
+                ATHLETE NAME
+              </label>
+              <span class="text-[10px] font-mono text-[#707980] uppercase">SAVED LOCALLY</span>
+            </div>
+            <div class="relative flex items-center">
+              <input 
+                type="text" 
+                id="input-athlete-name" 
+                value="Alex Mercer" 
+                placeholder="Enter your name" 
+                class="w-full bg-[#191D21] border border-[#30373D] text-[#F5F7F8] placeholder-[#4D555B] font-medium text-base rounded-lg px-3.5 py-3 focus:outline-none focus:border-[#B8F34A] transition-colors"
+                oninput="validateStep1()"
+              />
+              <div class="absolute right-3.5 text-[#B8F34A] pointer-events-none">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            </div>
+            <p class="text-[11px] text-[#707980] mt-2.5 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0 text-[#B8F34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <span>Imported from registration. You can edit it now or later in Profile.</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Privacy Assurance Note -->
+        <div class="mt-8 pt-4 border-t border-[#191D21] flex items-center gap-3 text-xs text-[#707980]">
+          <span class="w-2 h-2 rounded-full bg-[#B8F34A]/80"></span>
+          <span>Zero social profile. Your identity never leaves this device unless synced.</span>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- STEP 2: TRAINING EXPERIENCE                     -->
+      <!-- ============================================== -->
+      <section id="step-2" class="step-view hidden flex flex-col h-full justify-between">
+        <div>
+          <!-- Eyebrow -->
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-[#B8F34A] font-bold">ONBOARDING · 02</span>
+          </div>
+
+          <h1 class="text-2xl sm:text-[26px] font-extrabold tracking-tight text-[#F5F7F8] leading-tight mb-2">
+            HOW LONG HAVE YOU BEEN TRAINING?
+          </h1>
+          <p class="text-sm text-[#A8B0B7] leading-relaxed mb-5">
+            Calibrates default set rest timers and progressive overload guidance. No guilt, no rating scale.
+          </p>
+
+          <!-- Selection List -->
+          <div class="space-y-2.5" id="experience-options" role="radiogroup" aria-label="Training experience">
+            
+            <!-- Option 1: New -->
+            <button 
+              type="button" 
+              onclick="selectOption('experience', 'new', this)"
+              class="option-card w-full text-left p-3.5 rounded-xl border border-[#242A2F] bg-[#121519] hover:border-[#30373D] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none focus:ring-1 focus:ring-[#B8F34A]"
+              role="radio" 
+              aria-checked="false"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#F5F7F8] group-hover:text-white">NEW TO TRAINING</div>
+                <div class="text-xs text-[#707980] mt-0.5">Beginning your strength journey or restarting after a long break</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#30373D] flex items-center justify-center shrink-0 ml-3 bg-[#191D21]">
+                <div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+              </div>
+            </button>
+
+            <!-- Option 2: < 1 Year -->
+            <button 
+              type="button" 
+              onclick="selectOption('experience', 'under_1', this)"
+              class="option-card w-full text-left p-3.5 rounded-xl border border-[#242A2F] bg-[#121519] hover:border-[#30373D] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none focus:ring-1 focus:ring-[#B8F34A]"
+              role="radio" 
+              aria-checked="false"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#F5F7F8] group-hover:text-white">LESS THAN 1 YEAR</div>
+                <div class="text-xs text-[#707980] mt-0.5">Familiar with major barbell and dumbbell compound movements</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#30373D] flex items-center justify-center shrink-0 ml-3 bg-[#191D21]">
+                <div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+              </div>
+            </button>
+
+            <!-- Option 3: 1 - 3 Years (Default Selected) -->
+            <button 
+              type="button" 
+              onclick="selectOption('experience', '1_3', this)"
+              class="option-card selected w-full text-left p-3.5 rounded-xl border-2 border-[#B8F34A] bg-[#191D21] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none"
+              role="radio" 
+              aria-checked="true"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#B8F34A] flex items-center gap-2">
+                  1–3 YEARS
+                  <span class="text-[10px] font-mono uppercase bg-[#26331A] text-[#B8F34A] px-2 py-0.5 rounded font-bold">ACTIVE</span>
+                </div>
+                <div class="text-xs text-[#A8B0B7] mt-0.5">Consistent training history with established baseline weights</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#B8F34A] flex items-center justify-center shrink-0 ml-3 bg-[#26331A]">
+                <div class="dot w-2 h-2 rounded-full bg-[#B8F34A]"></div>
+              </div>
+            </button>
+
+            <!-- Option 4: 3+ Years -->
+            <button 
+              type="button" 
+              onclick="selectOption('experience', 'over_3', this)"
+              class="option-card w-full text-left p-3.5 rounded-xl border border-[#242A2F] bg-[#121519] hover:border-[#30373D] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none focus:ring-1 focus:ring-[#B8F34A]"
+              role="radio" 
+              aria-checked="false"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#F5F7F8] group-hover:text-white">3+ YEARS</div>
+                <div class="text-xs text-[#707980] mt-0.5">Advanced lifter requiring granular RPE, warmup sets, and PR logging</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#30373D] flex items-center justify-center shrink-0 ml-3 bg-[#191D21]">
+                <div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+              </div>
+            </button>
+
+          </div>
+        </div>
+
+        <div class="mt-6 text-xs text-[#707980] flex items-center justify-between">
+          <span>You can adjust this anytime in Profile · Settings.</span>
+          <span class="font-mono text-[#B8F34A]">1 SELECTION</span>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- STEP 3: TRAINING PREFERENCE                     -->
+      <!-- ============================================== -->
+      <section id="step-3" class="step-view hidden flex flex-col h-full justify-between">
+        <div>
+          <!-- Eyebrow -->
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-[#B8F34A] font-bold">ONBOARDING · 03</span>
+          </div>
+
+          <h1 class="text-2xl sm:text-[26px] font-extrabold tracking-tight text-[#F5F7F8] leading-tight mb-2">
+            HOW DO YOU LIKE TO TRAIN?
+          </h1>
+          <p class="text-sm text-[#A8B0B7] leading-relaxed mb-5">
+            Select your primary objective to set default rep ranges and exercise catalog suggestions.
+          </p>
+
+          <!-- Preference Selection List -->
+          <div class="space-y-2.5" id="preference-options" role="radiogroup" aria-label="Training preference">
+
+            <!-- Strength (Default Selected) -->
+            <button 
+              type="button" 
+              onclick="selectOption('preference', 'strength', this)"
+              class="option-card selected w-full text-left p-3.5 rounded-xl border-2 border-[#B8F34A] bg-[#191D21] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none"
+              role="radio" 
+              aria-checked="true"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#B8F34A] flex items-center gap-2">
+                  STRENGTH
+                  <span class="text-[10px] font-mono uppercase bg-[#26331A] text-[#B8F34A] px-2 py-0.5 rounded font-bold">HEAVY COMPOUND</span>
+                </div>
+                <div class="text-xs text-[#A8B0B7] mt-0.5">Heavy loads, lower reps (3–6 reps), emphasis on barbell PRs</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#B8F34A] flex items-center justify-center shrink-0 ml-3 bg-[#26331A]">
+                <div class="dot w-2 h-2 rounded-full bg-[#B8F34A]"></div>
+              </div>
+            </button>
+
+            <!-- Hypertrophy -->
+            <button 
+              type="button" 
+              onclick="selectOption('preference', 'hypertrophy', this)"
+              class="option-card w-full text-left p-3.5 rounded-xl border border-[#242A2F] bg-[#121519] hover:border-[#30373D] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none focus:ring-1 focus:ring-[#B8F34A]"
+              role="radio" 
+              aria-checked="false"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#F5F7F8] group-hover:text-white">HYPERTROPHY</div>
+                <div class="text-xs text-[#707980] mt-0.5">Muscle growth, moderate loads (8–12 reps), high volume focus</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#30373D] flex items-center justify-center shrink-0 ml-3 bg-[#191D21]">
+                <div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+              </div>
+            </button>
+
+            <!-- General Fitness -->
+            <button 
+              type="button" 
+              onclick="selectOption('preference', 'fitness', this)"
+              class="option-card w-full text-left p-3.5 rounded-xl border border-[#242A2F] bg-[#121519] hover:border-[#30373D] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none focus:ring-1 focus:ring-[#B8F34A]"
+              role="radio" 
+              aria-checked="false"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#F5F7F8] group-hover:text-white">GENERAL FITNESS</div>
+                <div class="text-xs text-[#707980] mt-0.5">Balanced full-body conditioning, endurance, consistent movement</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#30373D] flex items-center justify-center shrink-0 ml-3 bg-[#191D21]">
+                <div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+              </div>
+            </button>
+
+            <!-- Mixed -->
+            <button 
+              type="button" 
+              onclick="selectOption('preference', 'mixed', this)"
+              class="option-card w-full text-left p-3.5 rounded-xl border border-[#242A2F] bg-[#121519] hover:border-[#30373D] active:scale-[0.99] transition-all flex items-center justify-between group focus:outline-none focus:ring-1 focus:ring-[#B8F34A]"
+              role="radio" 
+              aria-checked="false"
+            >
+              <div>
+                <div class="font-bold text-sm sm:text-base text-[#F5F7F8] group-hover:text-white">MIXED / HYBRID</div>
+                <div class="text-xs text-[#707980] mt-0.5">Combination of heavy power lifts with accessory hypertrophy work</div>
+              </div>
+              <div class="radio-indicator w-5 h-5 rounded-full border border-[#30373D] flex items-center justify-center shrink-0 ml-3 bg-[#191D21]">
+                <div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+              </div>
+            </button>
+
+          </div>
+        </div>
+
+        <div class="mt-6 text-xs text-[#707980] flex items-center gap-2">
+          <svg class="w-4 h-4 text-[#B8F34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>You have full control to edit targets on any individual exercise.</span>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- STEP 4: READY / CHOOSE SPLIT TRANSITION        -->
+      <!-- ============================================== -->
+      <section id="step-4" class="step-view hidden flex flex-col h-full justify-between">
+        <div>
+          <!-- Eyebrow -->
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-[#B8F34A] font-bold">SETUP COMPLETE</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-[#B8F34A]"></span>
+          </div>
+
+          <h1 class="text-2xl sm:text-[28px] font-extrabold tracking-tight text-[#F5F7F8] leading-tight mb-2">
+            YOU'RE READY.
+          </h1>
+          <p class="text-sm text-[#A8B0B7] leading-relaxed mb-6">
+            Now, configure your workout sequence. Repshade will advance your program workout-by-workout, completely free from calendar guilt.
+          </p>
+
+          <!-- Core Engine Rule Card -->
+          <div class="bg-[#121519] border border-[#242A2F] rounded-xl p-4 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-[#B8F34A] font-bold">CORE PROTOCOL</span>
+              <span class="text-[10px] font-mono text-[#707980]">OFFLINE READY</span>
+            </div>
+            <div class="text-sm font-bold text-[#F5F7F8] mb-1">THE ROLLING SPLIT ENGINE</div>
+            <p class="text-xs text-[#A8B0B7] leading-relaxed">
+              The calendar tells you <strong class="text-[#F5F7F8]">when</strong> you trained. Your split tells you <strong class="text-[#B8F34A]">what</strong> you train next. Missed days never skip workouts.
+            </p>
+
+            <!-- Rolling Demonstration Strip -->
+            <div class="mt-3.5 pt-3 border-t border-[#191D21] flex items-center justify-between text-xs font-mono">
+              <span class="px-2.5 py-1 rounded bg-[#191D21] border border-[#242A2F] text-[#F5F7F8]">PUSH</span>
+              <span class="text-[#707980]">→</span>
+              <span class="px-2.5 py-1 rounded bg-[#26331A] border border-[#B8F34A] text-[#B8F34A] font-bold">PULL</span>
+              <span class="text-[#707980]">→</span>
+              <span class="px-2.5 py-1 rounded bg-[#191D21] border border-[#242A2F] text-[#F5F7F8]">LEGS</span>
+            </div>
+          </div>
+
+          <!-- Summary Badges -->
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div class="p-2.5 rounded-lg bg-[#121519] border border-[#242A2F]">
+              <span class="text-[#707980] block text-[10px]">EXPERIENCE</span>
+              <span id="summary-exp" class="font-bold text-[#F5F7F8]">1–3 Years</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-[#121519] border border-[#242A2F]">
+              <span class="text-[#707980] block text-[10px]">FOCUS</span>
+              <span id="summary-pref" class="font-bold text-[#B8F34A]">Strength</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reassurance Footer -->
+        <div class="mt-6 flex items-center gap-2 text-xs text-[#707980]">
+          <svg class="w-4 h-4 text-[#B8F34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          <span>Encrypted on-device SQLite database initialized.</span>
+        </div>
+      </section>
+
+      <!-- Bottom Action Area (Persistent Floating Bar) -->
+      <div class="mt-8 pt-4 border-t border-[#191D21] shrink-0">
+        <button 
+          id="btn-primary" 
+          onclick="handlePrimaryAction()" 
+          class="w-full bg-[#B8F34A] hover:bg-[#A4DD3F] active:bg-[#92cc32] text-[#0B0D0F] font-bold text-sm tracking-wider uppercase py-3.5 px-5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#B8F34A]/50"
+        >
+          <span id="btn-primary-text">CONTINUE</span>
+          <svg id="btn-primary-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+
+        <!-- Context indicator under CTA -->
+        <div class="mt-3 text-center">
+          <span id="footer-helper-text" class="text-[11px] font-mono text-[#707980]">STEP 1: CONFIRM ATHLETE NAME</span>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    const athleteData = {
+      name: 'Alex Mercer',
+      experience: '1_3',
+      preference: 'strength'
+    };
+
+    function updateStepUI() {
+      // Hide all steps
+      for (let i = 1; i <= totalSteps; i++) {
+        const el = document.getElementById(`step-${i}`);
+        if (el) el.classList.add('hidden');
+      }
+
+      // Show current step
+      const activeEl = document.getElementById(`step-${currentStep}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      // Update progress bar
+      const progressPercent = (currentStep / totalSteps) * 100;
+      document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
+
+      // Update indicators
+      document.getElementById('step-indicator-text').innerText = `STEP ${currentStep} OF ${totalSteps}`;
+
+      // Update back button state
+      const backBtn = document.getElementById('btn-back');
+      if (currentStep === 1) {
+        backBtn.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        backBtn.classList.remove('opacity-40', 'pointer-events-none');
+      }
+
+      // Skip button visibility
+      const skipBtn = document.getElementById('btn-skip');
+      if (currentStep === 4) {
+        skipBtn.classList.add('invisible');
+      } else {
+        skipBtn.classList.remove('invisible');
+      }
+
+      // Primary CTA Text & Helper
+      const primaryBtnText = document.getElementById('btn-primary-text');
+      const helperText = document.getElementById('footer-helper-text');
+      
+      if (currentStep === 1) {
+        primaryBtnText.innerText = 'CONTINUE';
+        helperText.innerText = 'STEP 1: CONFIRM ATHLETE NAME';
+      } else if (currentStep === 2) {
+        primaryBtnText.innerText = 'CONTINUE';
+        helperText.innerText = 'STEP 2: TRAINING EXPERIENCE';
+      } else if (currentStep === 3) {
+        primaryBtnText.innerText = 'CONTINUE';
+        helperText.innerText = 'STEP 3: PRIMARY TRAINING OBJECTIVE';
+      } else if (currentStep === 4) {
+        primaryBtnText.innerText = 'CHOOSE MY SPLIT';
+        helperText.innerText = 'PROCEED TO SPLIT TEMPLATES';
+      }
+    }
+
+    function navigateStep(direction) {
+      const nextStep = currentStep + direction;
+      if (nextStep >= 1 && nextStep <= totalSteps) {
+        currentStep = nextStep;
+        updateStepUI();
+      }
+    }
+
+    function handlePrimaryAction() {
+      if (currentStep < totalSteps) {
+        navigateStep(1);
+      } else {
+        // Destination: Screen 06 — Choose Split
+        const btn = document.getElementById('btn-primary');
+        btn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0B0D0F]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          INITIALIZING SPLITS...
+        `;
+        setTimeout(() => {
+          alert("Navigating to: Screen 06 — Choose Your Split (Push / Pull / Legs, Upper / Lower, Custom)");
+          btn.innerHTML = `<span>CHOOSE MY SPLIT</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+        }, 600);
+      }
+    }
+
+    function selectOption(group, value, element) {
+      athleteData[group] = value;
+      
+      const container = element.parentElement;
+      const cards = container.querySelectorAll('.option-card');
+      
+      cards.forEach(card => {
+        card.classList.remove('selected', 'border-2', 'border-[#B8F34A]', 'bg-[#191D21]');
+        card.classList.add('border', 'border-[#242A2F]', 'bg-[#121519]');
+        card.setAttribute('aria-checked', 'false');
+        
+        // title color
+        const title = card.querySelector('div > div:first-child');
+        if (title) {
+          title.classList.remove('text-[#B8F34A]');
+          title.classList.add('text-[#F5F7F8]');
+        }
+        
+        // radio dot
+        const dot = card.querySelector('.radio-indicator .dot');
+        const indicator = card.querySelector('.radio-indicator');
+        if (dot && indicator) {
+          dot.classList.remove('bg-[#B8F34A]');
+          dot.classList.add('bg-transparent');
+          indicator.classList.remove('border-[#B8F34A]', 'bg-[#26331A]');
+          indicator.classList.add('border-[#30373D]', 'bg-[#191D21]');
+        }
+      });
+
+      // Set active
+      element.classList.add('selected', 'border-2', 'border-[#B8F34A]', 'bg-[#191D21]');
+      element.classList.remove('border', 'border-[#242A2F]', 'bg-[#121519]');
+      element.setAttribute('aria-checked', 'true');
+      
+      const title = element.querySelector('div > div:first-child');
+      if (title) {
+        title.classList.add('text-[#B8F34A]');
+        title.classList.remove('text-[#F5F7F8]');
+      }
+
+      const dot = element.querySelector('.radio-indicator .dot');
+      const indicator = element.querySelector('.radio-indicator');
+      if (dot && indicator) {
+        dot.classList.add('bg-[#B8F34A]');
+        dot.classList.remove('bg-transparent');
+        indicator.classList.add('border-[#B8F34A]', 'bg-[#26331A]');
+        indicator.classList.remove('border-[#30373D]', 'bg-[#191D21]');
+      }
+
+      // Update summaries
+      if (group === 'experience') {
+        const labels = {
+          'new': 'New Lifter',
+          'under_1': '< 1 Year',
+          '1_3': '1–3 Years',
+          'over_3': '3+ Years'
+        };
+        document.getElementById('summary-exp').innerText = labels[value] || value;
+      } else if (group === 'preference') {
+        const labels = {
+          'strength': 'Strength',
+          'hypertrophy': 'Hypertrophy',
+          'fitness': 'Fitness',
+          'mixed': 'Mixed Hybrid'
+        };
+        document.getElementById('summary-pref').innerText = labels[value] || value;
+      }
+    }
+
+    function validateStep1() {
+      const val = document.getElementById('input-athlete-name').value.trim();
+      athleteData.name = val;
+      const btn = document.getElementById('btn-primary');
+      if (!val) {
+        btn.classList.add('opacity-50', 'pointer-events-none');
+      } else {
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    // Initialize UI on load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateStepUI();
+    });
+  </script>
+</body>
+</html>

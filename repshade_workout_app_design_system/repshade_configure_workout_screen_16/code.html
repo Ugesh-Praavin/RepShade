@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repshade — Configure Workouts (Screen 16)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: {
+              DEFAULT: '#0B0D0F',
+              secondary: '#121519',
+              tertiary: '#191D21',
+              elevated: '#20252A',
+            },
+            text: {
+              primary: '#F5F7F8',
+              secondary: '#A8B0B7',
+              tertiary: '#707980',
+              disabled: '#4D555B',
+            },
+            border: {
+              subtle: '#242A2F',
+              default: '#30373D',
+              strong: '#414A52',
+            },
+            accent: {
+              DEFAULT: '#B8F34A',
+              pressed: '#A4DD3F',
+              soft: '#26331A',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0D0F;
+      color: #F5F7F8;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#0B0D0F] text-[#F5F7F8] flex justify-center min-h-screen">
+  <!-- Mobile Container (Max 430px for standard iOS/Android canvas) -->
+  <div class="w-full max-w-[430px] min-h-screen bg-[#0B0D0F] flex flex-col justify-between border-x border-[#191D21] relative pb-28">
+
+    <!-- Top Navigation & Sticky Status Header -->
+    <header class="sticky top-0 z-40 bg-[#0B0D0F]/95 backdrop-blur-md border-b border-[#1A1E22] px-5 pt-12 pb-4">
+      <div class="flex items-center justify-between mb-3">
+        <!-- Back Navigation -->
+        <button onclick="window.history.back()" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#A8B0B7] hover:text-[#F5F7F8] py-2 px-1 rounded-lg transition-colors group">
+          <i data-lucide="arrow-left" class="w-4 h-4 text-[#A8B0B7] group-hover:text-accent transition-colors"></i>
+          <span>Choose Split</span>
+        </button>
+
+        <!-- Onboarding Progress Badge -->
+        <div class="flex items-center gap-2 bg-[#121519] border border-[#242A2F] px-3 py-1 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+          <span class="text-[11px] font-semibold tracking-wider text-[#A8B0B7] uppercase">Step 3 of 4</span>
+        </div>
+      </div>
+
+      <!-- Header Titles -->
+      <div class="space-y-1">
+        <div class="text-[11px] font-bold tracking-wider text-accent uppercase">Training Setup</div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-[#F5F7F8]">CONFIGURE WORKOUTS</h1>
+        <p class="text-xs text-[#A8B0B7] leading-relaxed">
+          Build the exercise order in your sequence. You can adjust exercises and sets anytime.
+        </p>
+      </div>
+
+      <!-- Segmented Sequence Progress Bar -->
+      <div class="mt-4 pt-3 border-t border-[#1F2429] flex items-center justify-between text-[11px] font-medium text-[#707980]">
+        <div class="flex items-center gap-1.5 text-accent font-semibold">
+          <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+          <span>Sequence: Push → Pull → Legs</span>
+        </div>
+        <span class="text-[10px] text-[#A8B0B7] uppercase tracking-wide">3 Workouts in Split</span>
+      </div>
+    </header>
+
+    <!-- Main Content: Workout Sequence Configuration -->
+    <main class="flex-1 px-5 py-5 space-y-5">
+
+      <!-- ================= 01: PUSH WORKOUT (Expanded / Configured State) ================= -->
+      <section class="bg-[#121519] border border-[#242A2F] rounded-2xl overflow-hidden transition-all shadow-sm">
+        <!-- Card Header -->
+        <div class="p-4 bg-[#191D21]/60 border-b border-[#242A2F] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#20252A] border border-[#30373D] flex items-center justify-center font-mono font-bold text-accent text-xs">
+              01
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base font-bold tracking-tight text-[#F5F7F8]">PUSH</h2>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#26331A] text-accent border border-accent/30 tracking-wider">PRIMARY</span>
+              </div>
+              <p class="text-xs text-[#A8B0B7]">Chest • Shoulders • Triceps</p>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <span class="text-xs font-bold text-[#F5F7F8] tracking-tight">6 EXERCISES</span>
+            <span class="block text-[10px] text-[#707980] font-mono">~45 MIN</span>
+          </div>
+        </div>
+
+        <!-- Exercise List (Compact Ordered Rows with Drag Affordance) -->
+        <div class="p-3 space-y-1.5" id="push-exercise-list">
+          <!-- Exercise 1 -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80 hover:border-[#30373D] transition-colors group">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab active:cursor-grabbing p-1 -ml-1 touch-none" title="Drag to reorder">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">01</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Barbell Bench Press</div>
+                <div class="text-[10px] text-[#707980]">Chest • Compound</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-1.5 text-[#707980] hover:text-[#F5F7F8] transition-colors rounded-lg" title="Edit exercise">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="p-1.5 text-[#707980] hover:text-red-400 transition-colors rounded-lg" title="Remove exercise">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Exercise 2 -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80 hover:border-[#30373D] transition-colors group">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab active:cursor-grabbing p-1 -ml-1 touch-none">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">02</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Incline Dumbbell Press</div>
+                <div class="text-[10px] text-[#707980]">Upper Chest • Dumbbell</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-1.5 text-[#707980] hover:text-[#F5F7F8] transition-colors rounded-lg">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="p-1.5 text-[#707980] hover:text-red-400 transition-colors rounded-lg">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Exercise 3 -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80 hover:border-[#30373D] transition-colors group">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab active:cursor-grabbing p-1 -ml-1 touch-none">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">03</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Cable Chest Fly</div>
+                <div class="text-[10px] text-[#707980]">Chest • Cable Isolation</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-1.5 text-[#707980] hover:text-[#F5F7F8] transition-colors rounded-lg">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="p-1.5 text-[#707980] hover:text-red-400 transition-colors rounded-lg">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Exercise 4 -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80 hover:border-[#30373D] transition-colors group">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab active:cursor-grabbing p-1 -ml-1 touch-none">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">04</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Dumbbell Shoulder Press</div>
+                <div class="text-[10px] text-[#707980]">Front Delts • Dumbbell</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-1.5 text-[#707980] hover:text-[#F5F7F8] transition-colors rounded-lg">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="p-1.5 text-[#707980] hover:text-red-400 transition-colors rounded-lg">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Exercise 5 -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80 hover:border-[#30373D] transition-colors group">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab active:cursor-grabbing p-1 -ml-1 touch-none">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">05</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Lateral Raise</div>
+                <div class="text-[10px] text-[#707980]">Side Delts • Cable/Dumbbell</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-1.5 text-[#707980] hover:text-[#F5F7F8] transition-colors rounded-lg">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="p-1.5 text-[#707980] hover:text-red-400 transition-colors rounded-lg">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Exercise 6 -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80 hover:border-[#30373D] transition-colors group">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab active:cursor-grabbing p-1 -ml-1 touch-none">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">06</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Triceps Pushdown</div>
+                <div class="text-[10px] text-[#707980]">Triceps • Cable Bar</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="p-1.5 text-[#707980] hover:text-[#F5F7F8] transition-colors rounded-lg">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="p-1.5 text-[#707980] hover:text-red-400 transition-colors rounded-lg">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Exercise Action to Push -->
+        <div class="p-3 pt-1 border-t border-[#1F2429] flex items-center gap-2">
+          <button onclick="openExerciseDrawer('PUSH')" class="flex-1 py-2.5 px-3 rounded-xl bg-[#191D21] hover:bg-[#20252A] border border-[#30373D] text-xs font-semibold text-[#F5F7F8] flex items-center justify-center gap-2 transition-colors active:scale-[0.99]">
+            <i data-lucide="plus" class="w-3.5 h-3.5 text-accent"></i>
+            <span>Add Exercise to Push</span>
+          </button>
+          <button class="py-2.5 px-3 rounded-xl bg-[#191D21] hover:bg-[#20252A] border border-[#30373D] text-xs font-semibold text-[#A8B0B7] hover:text-[#F5F7F8] transition-colors" title="Workout options">
+            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ================= 02: PULL WORKOUT (Partially Configured State) ================= -->
+      <section class="bg-[#121519] border border-[#242A2F] rounded-2xl overflow-hidden transition-all shadow-sm">
+        <!-- Card Header -->
+        <div class="p-4 bg-[#191D21]/60 border-b border-[#242A2F] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#20252A] border border-[#30373D] flex items-center justify-center font-mono font-bold text-accent text-xs">
+              02
+            </div>
+            <div>
+              <h2 class="text-base font-bold tracking-tight text-[#F5F7F8]">PULL</h2>
+              <p class="text-xs text-[#A8B0B7]">Back • Biceps • Rear Delts</p>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <span class="text-xs font-bold text-[#F5F7F8] tracking-tight">5 EXERCISES</span>
+            <span class="block text-[10px] text-[#707980] font-mono">~40 MIN</span>
+          </div>
+        </div>
+
+        <!-- Exercise Mini List -->
+        <div class="p-3 space-y-1.5">
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab p-1 -ml-1">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">01</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Lat Pulldown</div>
+                <div class="text-[10px] text-[#707980]">Back • Lats</div>
+              </div>
+            </div>
+            <button class="p-1.5 text-[#707980] hover:text-red-400">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab p-1 -ml-1">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">02</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Barbell Bent-Over Row</div>
+                <div class="text-[10px] text-[#707980]">Upper Back • Lat Width</div>
+              </div>
+            </div>
+            <button class="p-1.5 text-[#707980] hover:text-red-400">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#191D21] border border-[#242A2F]/80">
+            <div class="flex items-center gap-2.5">
+              <button class="text-[#707980] hover:text-[#F5F7F8] cursor-grab p-1 -ml-1">
+                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+              </button>
+              <span class="font-mono text-xs font-semibold text-[#707980] w-4">03</span>
+              <div>
+                <div class="text-xs font-semibold text-[#F5F7F8]">Seated Cable Row</div>
+                <div class="text-[10px] text-[#707980]">Mid Back • Thickness</div>
+              </div>
+            </div>
+            <button class="p-1.5 text-[#707980] hover:text-red-400">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-3 pt-1 border-t border-[#1F2429] flex items-center gap-2">
+          <button onclick="openExerciseDrawer('PULL')" class="flex-1 py-2.5 px-3 rounded-xl bg-[#191D21] hover:bg-[#20252A] border border-[#30373D] text-xs font-semibold text-[#F5F7F8] flex items-center justify-center gap-2 transition-colors">
+            <i data-lucide="plus" class="w-3.5 h-3.5 text-accent"></i>
+            <span>Add Exercise to Pull</span>
+          </button>
+          <button class="py-2.5 px-3 rounded-xl bg-[#191D21] hover:bg-[#20252A] border border-[#30373D] text-xs font-semibold text-[#A8B0B7]">
+            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ================= 03: LEGS WORKOUT (Empty / Initial Prompt State) ================= -->
+      <section class="bg-[#121519] border border-[#242A2F] rounded-2xl overflow-hidden transition-all shadow-sm">
+        <!-- Card Header -->
+        <div class="p-4 bg-[#191D21]/60 border-b border-[#242A2F] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#20252A] border border-[#30373D] flex items-center justify-center font-mono font-bold text-[#707980] text-xs">
+              03
+            </div>
+            <div>
+              <h2 class="text-base font-bold tracking-tight text-[#F5F7F8]">LEGS</h2>
+              <p class="text-xs text-[#A8B0B7]">Quads • Hamstrings • Calves</p>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <span class="text-xs font-bold text-[#A8B0B7] tracking-tight">4 EXERCISES READY</span>
+            <span class="block text-[10px] text-[#707980] font-mono">~35 MIN</span>
+          </div>
+        </div>
+
+        <!-- Preloaded Standard Template Helper / Quick Add -->
+        <div class="p-4 space-y-3">
+          <div class="bg-[#191D21] rounded-xl p-3 border border-[#242A2F] flex items-center justify-between">
+            <div class="space-y-0.5">
+              <span class="text-xs font-bold text-[#F5F7F8]">Recommended Starter Exercises</span>
+              <p class="text-[11px] text-[#A8B0B7]">Barbell Squat, RDL, Leg Extension, Standing Calf Raise</p>
+            </div>
+            <button onclick="applyLegStarter()" id="leg-starter-btn" class="px-2.5 py-1.5 rounded-lg bg-accent text-[#0B0D0F] font-bold text-[11px] hover:bg-accent-pressed transition-colors">
+              Apply
+            </button>
+          </div>
+
+          <button onclick="openExerciseDrawer('LEGS')" class="w-full py-2.5 px-3 rounded-xl bg-[#191D21] hover:bg-[#20252A] border border-dashed border-[#30373D] hover:border-accent text-xs font-semibold text-[#A8B0B7] hover:text-[#F5F7F8] flex items-center justify-center gap-2 transition-colors">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-accent"></i>
+            <span>Or Search & Add Custom Exercises</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Optional: Custom Sequence Expansion (+ ADD WORKOUT) -->
+      <div class="pt-2">
+        <button class="w-full py-3 px-4 rounded-xl border border-dashed border-[#242A2F] hover:border-[#414A52] text-xs font-semibold text-[#A8B0B7] hover:text-[#F5F7F8] flex items-center justify-center gap-2 transition-colors">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Add Custom Workout to Sequence (e.g. Core, Arms)</span>
+        </button>
+      </div>
+
+      <!-- Educational Split Philosophy Micro-Banner -->
+      <div class="bg-[#121519]/70 border border-[#242A2F] rounded-xl p-3 flex items-start gap-2.5 text-xs text-[#A8B0B7]">
+        <i data-lucide="shield-check" class="w-4 h-4 text-accent shrink-0 mt-0.5"></i>
+        <div class="space-y-0.5">
+          <span class="font-bold text-[#F5F7F8]">Historical Integrity Guarantee</span>
+          <p class="text-[11px] leading-relaxed text-[#707980]">
+            Configuring these exercises creates your active sequence template. Future modifications will never alter or rewrite completed workout logs in your history.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Sticky Action Dock -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#0B0D0F]/95 backdrop-blur-lg border-t border-[#1F2429] p-4 z-40">
+      <div class="flex items-center justify-between text-[11px] font-medium text-[#A8B0B7] mb-2 px-1">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5 text-accent"></i>
+          <span class="text-[#F5F7F8] font-bold">3 Workouts Ready</span>
+        </span>
+        <span class="text-[#707980]">Next: Ready & Launch</span>
+      </div>
+
+      <button id="finish-configure-btn" onclick="completeWorkoutSetup()" class="w-full h-12 rounded-xl bg-accent hover:bg-accent-pressed text-[#0B0D0F] font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 transition-all shadow-lg shadow-accent/10 active:scale-[0.99]">
+        <span id="btn-text">CONTINUE TO SUMMARY →</span>
+        <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]" id="btn-icon"></i>
+      </button>
+
+      <div class="mt-2 text-center text-[10px] text-[#707980] tracking-wider uppercase">
+        Continuous Rolling Split Engine Active
+      </div>
+    </div>
+
+    <!-- ================= ADD EXERCISE MODAL / BOTTOM SHEET (Drawer State) ================= -->
+    <div id="exercise-drawer" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex flex-col justify-end transition-opacity">
+      <div class="w-full max-w-[430px] mx-auto bg-[#121519] border-t border-[#242A2F] rounded-t-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200">
+        <!-- Drawer Handle & Header -->
+        <div class="pt-3 pb-2 px-5 border-b border-[#242A2F] bg-[#191D21]/60">
+          <div class="w-10 h-1 rounded-full bg-[#30373D] mx-auto mb-3"></div>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-accent tracking-wider uppercase">Exercise Library</span>
+              <h3 class="text-base font-extrabold text-[#F5F7F8]" id="drawer-workout-target">ADD TO PUSH</h3>
+            </div>
+            <button onclick="closeExerciseDrawer()" class="p-2 rounded-lg bg-[#20252A] text-[#A8B0B7] hover:text-[#F5F7F8]">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Instant Filter / Search Input -->
+          <div class="mt-3 relative">
+            <i data-lucide="search" class="w-4 h-4 text-[#707980] absolute left-3 top-3"></i>
+            <input type="text" placeholder="Search bench, press, dumbbell, fly..." class="w-full h-10 pl-9 pr-3 rounded-xl bg-[#0B0D0F] border border-[#30373D] text-xs text-[#F5F7F8] placeholder-[#707980] focus:border-accent focus:outline-none transition-colors">
+          </div>
+        </div>
+
+        <!-- Exercise Category Pills -->
+        <div class="px-5 py-2.5 flex items-center gap-2 overflow-x-auto custom-scrollbar border-b border-[#1F2429] bg-[#0B0D0F]">
+          <button class="px-3 py-1 rounded-full bg-accent text-[#0B0D0F] text-[11px] font-bold shrink-0">Chest</button>
+          <button class="px-3 py-1 rounded-full bg-[#191D21] text-[#A8B0B7] hover:text-[#F5F7F8] text-[11px] font-medium shrink-0">Shoulders</button>
+          <button class="px-3 py-1 rounded-full bg-[#191D21] text-[#A8B0B7] hover:text-[#F5F7F8] text-[11px] font-medium shrink-0">Triceps</button>
+          <button class="px-3 py-1 rounded-full bg-[#191D21] text-[#A8B0B7] hover:text-[#F5F7F8] text-[11px] font-medium shrink-0">Back</button>
+          <button class="px-3 py-1 rounded-full bg-[#191D21] text-[#A8B0B7] hover:text-[#F5F7F8] text-[11px] font-medium shrink-0">Legs</button>
+        </div>
+
+        <!-- Selectable Exercise Items -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+          <div class="p-3 rounded-xl bg-[#191D21] border border-[#242A2F] flex items-center justify-between hover:border-[#30373D] transition-colors cursor-pointer" onclick="selectSampleExercise('Dumbbell Incline Fly')">
+            <div>
+              <div class="text-xs font-semibold text-[#F5F7F8]">Dumbbell Incline Fly</div>
+              <div class="text-[10px] text-[#707980]">Upper Chest • Isolation</div>
+            </div>
+            <button class="p-1.5 rounded-lg bg-[#20252A] text-accent hover:bg-accent hover:text-[#0B0D0F] transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="p-3 rounded-xl bg-[#191D21] border border-[#242A2F] flex items-center justify-between hover:border-[#30373D] transition-colors cursor-pointer" onclick="selectSampleExercise('Dips (Chest Focus)')">
+            <div>
+              <div class="text-xs font-semibold text-[#F5F7F8]">Dips (Chest Focus)</div>
+              <div class="text-[10px] text-[#707980]">Lower Chest • Bodyweight / Weighted</div>
+            </div>
+            <button class="p-1.5 rounded-lg bg-[#20252A] text-accent hover:bg-accent hover:text-[#0B0D0F] transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="p-3 rounded-xl bg-[#191D21] border border-[#242A2F] flex items-center justify-between hover:border-[#30373D] transition-colors cursor-pointer" onclick="selectSampleExercise('Machine Shoulder Press')">
+            <div>
+              <div class="text-xs font-semibold text-[#F5F7F8]">Machine Shoulder Press</div>
+              <div class="text-[10px] text-[#707980]">Front Delts • Machine</div>
+            </div>
+            <button class="p-1.5 rounded-lg bg-[#20252A] text-accent hover:bg-accent hover:text-[#0B0D0F] transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="p-3 rounded-xl bg-[#191D21] border border-[#242A2F] flex items-center justify-between hover:border-[#30373D] transition-colors cursor-pointer" onclick="selectSampleExercise('Skull Crushers')">
+            <div>
+              <div class="text-xs font-semibold text-[#F5F7F8]">Skull Crushers (EZ Bar)</div>
+              <div class="text-[10px] text-[#707980]">Triceps Long Head • Free Weight</div>
+            </div>
+            <button class="p-1.5 rounded-lg bg-[#20252A] text-accent hover:bg-accent hover:text-[#0B0D0F] transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 border-t border-[#1F2429] bg-[#0B0D0F] flex items-center gap-2">
+          <button onclick="closeExerciseDrawer()" class="flex-1 py-2.5 rounded-xl bg-[#191D21] border border-[#30373D] text-xs font-semibold text-[#A8B0B7]">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Drawer management
+    function openExerciseDrawer(workoutName) {
+      document.getElementById('drawer-workout-target').innerText = `ADD TO ${workoutName}`;
+      document.getElementById('exercise-drawer').classList.remove('hidden');
+    }
+
+    function closeExerciseDrawer() {
+      document.getElementById('exercise-drawer').classList.add('hidden');
+    }
+
+    function selectSampleExercise(name) {
+      alert(`"${name}" added to workout template.`);
+      closeExerciseDrawer();
+    }
+
+    function applyLegStarter() {
+      const btn = document.getElementById('leg-starter-btn');
+      btn.innerText = 'Applied ✓';
+      btn.classList.remove('bg-accent', 'text-[#0B0D0F]');
+      btn.classList.add('bg-[#26331A]', 'text-accent', 'border', 'border-accent/40');
+    }
+
+    function completeWorkoutSetup() {
+      const btn = document.getElementById('finish-configure-btn');
+      const text = document.getElementById('btn-text');
+      const icon = document.getElementById('btn-icon');
+      
+      text.innerText = 'SAVING SEQUENCE TEMPLATES...';
+      btn.classList.add('opacity-80', 'cursor-not-allowed');
+      
+      setTimeout(() => {
+        text.innerText = 'WORKOUTS INITIALIZED ✓';
+        btn.classList.remove('opacity-80');
+        btn.classList.add('bg-emerald-400');
+        setTimeout(() => {
+          window.location.href = '#';
+        }, 600);
+      }, 700);
+    }
+  </script>
+</body>
+</html>
