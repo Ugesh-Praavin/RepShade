@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -22,14 +22,14 @@ export function AnimatedSplashScreen({
   const [isRendered, setIsRendered] = useState(true);
 
   // Animation values
-  const logoScale = useRef(new Animated.Value(0.85)).current;
-  const logoOpacity = useRef(new Animated.Value(0)).current;
-  const textOpacity = useRef(new Animated.Value(0)).current;
-  const textTranslateY = useRef(new Animated.Value(15)).current;
-  const glowPulse = useRef(new Animated.Value(0.4)).current;
-  const containerOpacity = useRef(new Animated.Value(1)).current;
-  const containerScale = useRef(new Animated.Value(1)).current;
-  const progressWidth = useRef(new Animated.Value(0)).current;
+  const [logoScale] = useState(() => new Animated.Value(0.85));
+  const [logoOpacity] = useState(() => new Animated.Value(0));
+  const [textOpacity] = useState(() => new Animated.Value(0));
+  const [textTranslateY] = useState(() => new Animated.Value(15));
+  const [glowPulse] = useState(() => new Animated.Value(0.4));
+  const [containerOpacity] = useState(() => new Animated.Value(1));
+  const [containerScale] = useState(() => new Animated.Value(1));
+  const [progressWidth] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     // 1. Entrance animation
