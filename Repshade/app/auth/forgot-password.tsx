@@ -53,7 +53,7 @@ export default function ForgotPasswordScreen() {
               Reset Link Sent
             </AppText>
             <AppText variant="bodyMd" color="secondary" align="center">
-              We've sent password reset instructions to{' '}
+              {"We've sent password reset instructions to "}
               <AppText variant="bodyMd" weight="700" color="primary">
                 {email}
               </AppText>
@@ -74,7 +74,7 @@ export default function ForgotPasswordScreen() {
                 Forgot Password?
               </AppText>
               <AppText variant="bodyMd" color="secondary">
-                Enter the email associated with your account and we'll send you a password reset link.
+                {"Enter the email associated with your account and we'll send you a password reset link."}
               </AppText>
             </View>
 

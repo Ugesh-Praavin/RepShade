@@ -21,3 +21,4 @@ export * from './OfflineBanner';
 export * from './SyncIndicator';
 export * from './StatCard';
 export * from './ProgressBar';
+export * from './AnimatedSplashScreen';

@@ -5,10 +5,13 @@ import {
   WorkoutSessionRow,
   WorkoutSetRow,
 } from '../repositories/workoutRepository';
-import { recordRepository, PersonalRecordRow } from '../repositories/recordRepository';
-import { exerciseRepository, ExerciseRow } from '../repositories/exerciseRepository';
+import { recordRepository } from '../repositories/recordRepository';
+import { ExerciseRow } from '../repositories/exerciseRepository';
+import { splitRepository } from '../repositories/splitRepository';
 import { WorkoutWithExercises, useSplitStore } from './splitStore';
 import { generateUUID } from '../utils/uuid';
+import { execute } from '../database/client';
+import { workoutTimerService } from '../services/workoutTimerService';
 
 export interface ExerciseSummaryBreakdown {
   exerciseId: string;
@@ -42,6 +45,8 @@ export interface WorkoutStoreState {
   sessionSets: WorkoutSetRow[];
   elapsedSeconds: number;
   isPaused: boolean;
+  totalPausedMs: number;
+  lastPausedTimestamp: number | null;
   restTimerSeconds: number;
   isRestTimerActive: boolean;
   restTimerTotal: number;
@@ -74,7 +79,9 @@ export interface WorkoutStoreState {
   addRestSeconds: (delta: number) => void;
   tickTimers: () => void;
   finishWorkout: () => Promise<WorkoutSummaryInfo | null>;
+  finishWorkoutWithDuration: (durationSeconds: number) => Promise<WorkoutSummaryInfo | null>;
   discardWorkout: () => Promise<void>;
+  checkAndRestoreWorkout: (userId?: string) => Promise<boolean>;
 }
 
 export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
@@ -83,6 +90,8 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
   sessionSets: [],
   elapsedSeconds: 0,
   isPaused: false,
+  totalPausedMs: 0,
+  lastPausedTimestamp: null,
   restTimerSeconds: 0,
   isRestTimerActive: false,
   restTimerTotal: 90,
@@ -93,11 +102,13 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
   startWorkout: async (template, userId = 'local_user') => {
     set({ isLoading: true, error: null });
     try {
+      const now = Date.now();
+      const rawExercises = template.exercises || [];
       const { sessionId, sets } = await workoutRepository.startWorkoutSession({
         userId,
         splitId: template.split_id,
         workoutTemplateId: template.id,
-        exercises: template.exercises.map((e) => ({
+        exercises: rawExercises.map((e) => ({
           workoutExerciseId: e.id,
           exerciseId: e.exercise_id,
           targetSets: e.target_sets || 3,
@@ -111,7 +122,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
         user_id: userId,
         split_id: template.split_id,
         workout_template_id: template.id,
-        started_at: Date.now(),
+        started_at: now,
         completed_at: null,
         status: 'in_progress',
         duration_seconds: 0,
@@ -120,21 +131,33 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
         total_reps: 0,
         notes: null,
         split_advanced: 0,
-        created_at: Date.now(),
-        updated_at: Date.now(),
+        created_at: now,
+        updated_at: now,
       };
 
       set({
         activeSession: session,
-        activeTemplate: template,
+        activeTemplate: {
+          ...template,
+          exercises: rawExercises,
+        },
         sessionSets: sets,
         elapsedSeconds: 0,
         isPaused: false,
+        totalPausedMs: 0,
+        lastPausedTimestamp: null,
         restTimerSeconds: 0,
         isRestTimerActive: false,
         summaryData: null,
         isLoading: false,
       });
+
+      // Start Android/iOS Foreground Service with live Chronometer notification
+      try {
+        await workoutTimerService.startTimer(sessionId, template.name, now);
+      } catch (serviceErr) {
+        console.warn('Native workout timer service error (continuing with internal timer):', serviceErr);
+      }
     } catch (err: any) {
       set({ error: err?.message || 'Failed to start workout', isLoading: false });
       throw err;
@@ -153,8 +176,6 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
     });
 
     set({ sessionSets: updated });
-
-    // Persist to local SQLite
     await workoutRepository.logSet(setId, updates);
   },
 
@@ -170,15 +191,11 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
     );
 
     set({ sessionSets: updated });
-
-    // Persist to SQLite
     await workoutRepository.logSet(setId, { completed: nextCompleted === 1 });
 
-    // If set was just marked complete, trigger rest timer & check PR
     if (nextCompleted === 1) {
       get().startRestTimer(defaultRestSeconds);
 
-      // Check PR in background
       if (activeSession && targetSet.weight && targetSet.weight > 0) {
         try {
           await recordRepository.checkAndSavePR({
@@ -267,8 +284,21 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
     });
   },
 
-  pauseWorkout: () => set({ isPaused: true }),
-  resumeWorkout: () => set({ isPaused: false }),
+  pauseWorkout: () => {
+    const { elapsedSeconds } = get();
+    workoutTimerService.pauseTimer(elapsedSeconds);
+    set({ isPaused: true, lastPausedTimestamp: Date.now() });
+  },
+
+  resumeWorkout: () => {
+    const { lastPausedTimestamp, totalPausedMs } = get();
+    let newTotalPaused = totalPausedMs;
+    if (lastPausedTimestamp) {
+      newTotalPaused += Date.now() - lastPausedTimestamp;
+    }
+    workoutTimerService.resumeTimer();
+    set({ isPaused: false, lastPausedTimestamp: null, totalPausedMs: newTotalPaused });
+  },
 
   startRestTimer: (seconds) => {
     set({
@@ -296,10 +326,15 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
   },
 
   tickTimers: () => {
-    const { isPaused, elapsedSeconds, isRestTimerActive, restTimerSeconds } = get();
+    const { isPaused, activeSession, totalPausedMs, isRestTimerActive, restTimerSeconds } = get();
 
-    let nextElapsed = elapsedSeconds;
-    if (!isPaused) {
+    let nextElapsed = get().elapsedSeconds;
+    if (activeSession && activeSession.started_at) {
+      if (!isPaused) {
+        const now = Date.now();
+        nextElapsed = Math.max(0, Math.floor((now - activeSession.started_at - totalPausedMs) / 1000));
+      }
+    } else if (!isPaused) {
       nextElapsed += 1;
     }
 
@@ -321,7 +356,30 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
   },
 
   finishWorkout: async () => {
-    const { activeSession, sessionSets, elapsedSeconds, activeTemplate } = get();
+    const { elapsedSeconds } = get();
+    return await get().finishWorkoutWithDuration(elapsedSeconds);
+  },
+
+  finishWorkoutWithDuration: async (durationSeconds: number) => {
+    await workoutTimerService.stopTimer();
+
+    let { activeSession, sessionSets, activeTemplate } = get();
+
+    // If activeSession is missing (e.g. app was terminated), recover it from SQLite
+    if (!activeSession) {
+      const dbSession = await workoutRepository.getActiveSession('local_user');
+      if (dbSession) {
+        activeSession = dbSession;
+        sessionSets = await workoutRepository.getSetsForSession(dbSession.id);
+        const workouts = await splitRepository.getWorkoutsForSplit(dbSession.split_id);
+        const template = workouts.find((w) => w.id === dbSession.workout_template_id);
+        if (template) {
+          const exercises = await splitRepository.getExercisesForWorkout(template.id);
+          activeTemplate = { ...template, exercises };
+        }
+      }
+    }
+
     if (!activeSession) return null;
 
     const completedSets = sessionSets.filter((s) => s.completed === 1);
@@ -330,7 +388,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
 
     await workoutRepository.finishWorkoutSession({
       sessionId: activeSession.id,
-      durationSeconds: elapsedSeconds,
+      durationSeconds,
     });
 
     // Advance split in SQLite & splitStore
@@ -379,7 +437,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
         ...activeSession,
         status: 'completed',
         completed_at: Date.now(),
-        duration_seconds: elapsedSeconds,
+        duration_seconds: durationSeconds,
         total_volume: totalVolume,
         total_sets: completedSets.length,
         total_reps: totalReps,
@@ -390,7 +448,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
       totalVolume,
       totalSets: completedSets.length,
       totalReps,
-      durationSeconds: elapsedSeconds,
+      durationSeconds,
       prsAchieved: [],
       breakdown,
       nextWorkoutName: nextWorkout?.name || 'Next Workout',
@@ -405,6 +463,8 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
       activeTemplate: null,
       sessionSets: [],
       elapsedSeconds: 0,
+      totalPausedMs: 0,
+      lastPausedTimestamp: null,
       isRestTimerActive: false,
     });
 
@@ -412,14 +472,74 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
   },
 
   discardWorkout: async () => {
+    await workoutTimerService.stopTimer();
+    const { activeSession } = get();
+    if (activeSession) {
+      try {
+        await execute("UPDATE workout_sessions SET status = 'abandoned' WHERE id = ?;", [activeSession.id]);
+      } catch (e) {
+        console.warn('Failed to mark session abandoned:', e);
+      }
+    }
     set({
       activeSession: null,
       activeTemplate: null,
       sessionSets: [],
       elapsedSeconds: 0,
+      totalPausedMs: 0,
+      lastPausedTimestamp: null,
       isRestTimerActive: false,
       restTimerSeconds: 0,
       summaryData: null,
     });
+  },
+
+  checkAndRestoreWorkout: async (userId = 'local_user') => {
+    try {
+      // 1. Check if user tapped "Stop Timer" on notification while app was in background or closed
+      const pending = await workoutTimerService.getPendingCompletedWorkout();
+      if (pending && pending.hasPending) {
+        await workoutTimerService.clearPendingCompletedWorkout();
+        const summary = await get().finishWorkoutWithDuration(pending.durationSeconds);
+        if (summary) {
+          return true; // Workout was completed via notification
+        }
+      }
+
+      // 2. Check if there's an in_progress session in SQLite
+      const activeSession = await workoutRepository.getActiveSession(userId);
+      if (activeSession && activeSession.status === 'in_progress') {
+        const sets = await workoutRepository.getSetsForSession(activeSession.id);
+        const workouts = await splitRepository.getWorkoutsForSplit(activeSession.split_id);
+        const template = workouts.find((w) => w.id === activeSession.workout_template_id);
+        let activeTemplate: WorkoutWithExercises | null = null;
+        if (template) {
+          const exercises = await splitRepository.getExercisesForWorkout(template.id);
+          activeTemplate = { ...template, exercises };
+        }
+
+        const elapsed = Math.max(0, Math.floor((Date.now() - activeSession.started_at) / 1000));
+
+        set({
+          activeSession,
+          activeTemplate,
+          sessionSets: sets,
+          elapsedSeconds: elapsed,
+          isPaused: false,
+          totalPausedMs: 0,
+          lastPausedTimestamp: null,
+        });
+
+        // Ensure timer service is running with notification
+        await workoutTimerService.startTimer(
+          activeSession.id,
+          activeTemplate?.name || 'Active Workout',
+          activeSession.started_at
+        );
+      }
+    } catch (e) {
+      console.warn('Error in checkAndRestoreWorkout:', e);
+    }
+    return false;
   },
 }));

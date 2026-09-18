@@ -1,20 +1,24 @@
-import { DarkTheme, DefaultTheme, ThemeProvider, Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getDatabase } from '@/database/client';
+import { AnimatedSplashScreen } from '@/components';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Ignore error if splash screen was already prevented
 });
 
 import { useAuthStore } from '@/stores/authStore';
+import { useWorkoutStore } from '@/stores/workoutStore';
 
 export default function RootLayout() {
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme !== 'light';
+  const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
     let unsubscribeAuth: (() => void) | undefined;
@@ -22,9 +26,16 @@ export default function RootLayout() {
       try {
         await getDatabase();
         unsubscribeAuth = useAuthStore.getState().initializeAuth();
+        const didComplete = await useWorkoutStore.getState().checkAndRestoreWorkout();
+        if (didComplete) {
+          setTimeout(() => {
+            router.push('/workout/summary');
+          }, 100);
+        }
       } catch (err) {
         console.error('Failed to initialize local database or auth:', err);
       } finally {
+        setIsAppReady(true);
         await SplashScreen.hideAsync().catch(() => {});
       }
     }
@@ -80,6 +91,7 @@ export default function RootLayout() {
           <Stack.Screen name="settings" options={{ headerShown: false }} />
           <Stack.Screen name="showcase" options={{ headerShown: false }} />
         </Stack>
+        <AnimatedSplashScreen isAppReady={isAppReady} />
       </ThemeProvider>
     </SafeAreaProvider>
   );

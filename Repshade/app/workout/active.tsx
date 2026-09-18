@@ -7,6 +7,8 @@ import {
   TextInput,
   Modal as RNModal,
   FlatList,
+  AppState,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -43,6 +45,7 @@ import { useSplitStore } from '@/stores/splitStore';
 import { useExerciseStore } from '@/stores/exerciseStore';
 import { workoutEngine } from '@/domain/workout/workoutEngine';
 import { ExerciseRow } from '@/repositories/exerciseRepository';
+import { workoutTimerService } from '@/services/workoutTimerService';
 
 export default function ActiveWorkoutScreen() {
   const router = useRouter();
@@ -70,7 +73,9 @@ export default function ActiveWorkoutScreen() {
     addRestSeconds,
     tickTimers,
     finishWorkout,
+    finishWorkoutWithDuration,
     discardWorkout,
+    checkAndRestoreWorkout,
   } = useWorkoutStore();
 
   const { nextWorkout } = useSplitStore();
@@ -81,21 +86,72 @@ export default function ActiveWorkoutScreen() {
   const [showFinishDialog, setShowFinishDialog] = useState(false);
   const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
   const [exerciseSearchQuery, setExerciseSearchQuery] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  // Start workout if none is active on mount
+  // Start workout if none is active on mount & listen to background stop action
   useEffect(() => {
     initializeLibrary();
-    if (!activeSession && nextWorkout) {
-      startWorkout(nextWorkout);
+
+    async function initWorkout() {
+      setIsInitializing(true);
+      try {
+        await workoutTimerService.requestNotificationPermission().catch(() => {});
+        const didComplete = await checkAndRestoreWorkout();
+        if (didComplete) {
+          router.replace('/workout/summary');
+          return;
+        }
+
+        const currentActive = useWorkoutStore.getState().activeSession;
+        if (!currentActive) {
+          let workoutToStart = nextWorkout;
+          if (!workoutToStart) {
+            await useSplitStore.getState().loadActiveSplit();
+            workoutToStart =
+              useSplitStore.getState().nextWorkout || useSplitStore.getState().workouts[0] || null;
+          }
+
+          if (workoutToStart) {
+            await startWorkout(workoutToStart);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to initialize workout session:', e);
+      } finally {
+        setIsInitializing(false);
+      }
     }
+    initWorkout();
+
+    // Listen for "Stop Timer" action from Android Notification
+    const unsubscribe = workoutTimerService.subscribeToWorkoutTimerStopped(async (event) => {
+      const summary = await finishWorkoutWithDuration(event.durationSeconds);
+      if (summary) {
+        router.replace('/workout/summary');
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
-  // Timer ticker interval (runs every second)
+  // Timer ticker interval (runs every second) & AppState resume sync
   useEffect(() => {
     const interval = setInterval(() => {
       tickTimers();
     }, 1000);
-    return () => clearInterval(interval);
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        tickTimers();
+      }
+    });
+
+    return () => {
+      clearInterval(interval);
+      subscription.remove();
+    };
   }, []);
 
   const completedSets = sessionSets.filter((s) => s.completed === 1);
@@ -141,6 +197,29 @@ export default function ActiveWorkoutScreen() {
     const val = Math.max(0, (currentReps || 0) + delta);
     logSet(setId, { reps: val });
   };
+
+  if (isInitializing && !activeSession) {
+    return (
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.background.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        ]}
+      >
+        <ActivityIndicator size="large" color={theme.accent.primary} />
+        <AppText variant="h3" weight="800" style={{ marginTop: 20 }}>
+          PREPARING WORKOUT
+        </AppText>
+        <AppText variant="caption" color="secondary" style={{ marginTop: 6 }}>
+          Syncing session and background timer...
+        </AppText>
+      </View>
+    );
+  }
 
   const exercises = activeTemplate?.exercises || [];
 

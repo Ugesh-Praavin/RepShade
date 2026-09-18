@@ -66,7 +66,23 @@ export default function HistoryScreen() {
   };
 
   useEffect(() => {
-    loadHistory();
+    let isMounted = true;
+    historyRepository.getWorkoutHistory('local_user', 50)
+      .then((items) => {
+        if (isMounted) {
+          setHistoryItems(items);
+          setIsLoading(false);
+        }
+      })
+      .catch((e) => {
+        console.error('Error loading history:', e);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleOpenDetails = async (session: CompletedWorkoutHistoryItem) => {

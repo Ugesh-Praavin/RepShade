@@ -42,10 +42,6 @@ export default function PersonalRecordsScreen() {
   const [selectedMuscle, setSelectedMuscle] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadPRs();
-  }, []);
-
   const loadPRs = async () => {
     setIsLoading(true);
     try {
@@ -69,6 +65,36 @@ export default function PersonalRecordsScreen() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    recordRepository
+      .getAllPRs('local_user')
+      .then(async (records) => {
+        const enriched: PRWithExercise[] = [];
+        for (const r of records) {
+          const ex = await exerciseRepository.getExerciseById(r.exercise_id);
+          enriched.push({
+            ...r,
+            exercise_name: ex?.name || 'Exercise',
+            primary_muscle: ex?.primary_muscle || 'General',
+            equipment: ex?.equipment || 'Bodyweight',
+          });
+        }
+        if (isMounted) {
+          setPrs(enriched);
+          setIsLoading(false);
+        }
+      })
+      .catch((e) => {
+        console.error('Error loading PRs:', e);
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredPrs =
     selectedMuscle === 'All'
