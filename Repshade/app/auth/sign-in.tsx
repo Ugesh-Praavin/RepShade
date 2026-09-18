@@ -124,7 +124,7 @@ export default function SignInScreen() {
       {/* Sign Up Link */}
       <View style={styles.footer}>
         <AppText variant="bodyMd" color="secondary">
-          Don't have an account?{' '}
+          {"Don't have an account? "}
         </AppText>
         <TextButton
           title="Sign Up"

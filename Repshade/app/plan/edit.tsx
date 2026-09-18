@@ -69,12 +69,6 @@ export default function EditRoutineScreen() {
     initializeLibrary();
   }, []);
 
-  useEffect(() => {
-    if (activeSplit) {
-      setSplitNameInput(activeSplit.name);
-    }
-  }, [activeSplit]);
-
   const handleSaveSplitName = async () => {
     if (splitNameInput.trim()) {
       await renameSplit(splitNameInput.trim());
@@ -171,7 +165,10 @@ export default function EditRoutineScreen() {
               </AppText>
               <IconButton
                 icon={<Edit3 size={16} color={theme.accent.primary} />}
-                onPress={() => setIsEditingSplitName(true)}
+                onPress={() => {
+                  setSplitNameInput(activeSplit?.name || '');
+                  setIsEditingSplitName(true);
+                }}
                 accessibilityLabel="Edit split name"
                 variant="ghost"
                 size={36}

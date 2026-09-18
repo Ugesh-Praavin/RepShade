@@ -34,24 +34,43 @@ export default function ProgressScreen() {
   const [prs, setPrs] = useState<PersonalRecordRow[]>([]);
   const [totalSessions, setTotalSessions] = useState(0);
 
-  useEffect(() => {
-    loadProgressData();
-  }, []);
-
   const loadProgressData = async () => {
     try {
-      const vol = await progressRepository.getWeeklyVolume('local_user', 6);
+      const [vol, allPrs, history] = await Promise.all([
+        progressRepository.getWeeklyVolume('local_user', 6),
+        recordRepository.getAllPRs('local_user'),
+        historyRepository.getWorkoutHistory('local_user', 100),
+      ]);
       setWeeklyVolume(vol);
-
-      const allPrs = await recordRepository.getAllPRs('local_user');
       setPrs(allPrs);
-
-      const history = await historyRepository.getWorkoutHistory('local_user', 100);
       setTotalSessions(history.length);
     } catch (e) {
       console.error('Error loading progress data:', e);
     }
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    Promise.all([
+      progressRepository.getWeeklyVolume('local_user', 6),
+      recordRepository.getAllPRs('local_user'),
+      historyRepository.getWorkoutHistory('local_user', 100),
+    ])
+      .then(([vol, allPrs, history]) => {
+        if (isMounted) {
+          setWeeklyVolume(vol);
+          setPrs(allPrs);
+          setTotalSessions(history.length);
+        }
+      })
+      .catch((e) => {
+        console.error('Error loading progress data:', e);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const totalWeeklyVol = weeklyVolume.reduce((acc, curr) => acc + curr.totalVolume, 0);
   const maxWeeklyVol = Math.max(...weeklyVolume.map((w) => w.totalVolume), 1000);
