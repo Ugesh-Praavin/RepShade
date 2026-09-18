@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Switch, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -29,13 +29,15 @@ import {
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useExerciseStore } from '@/stores/exerciseStore';
 import { useAuthStore } from '@/stores/authStore';
+import { settingsRepository } from '@/repositories/settingsRepository';
 import { resetDatabase } from '@/database/client';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { theme, radius } = useAppTheme();
   const { initializeLibrary } = useExerciseStore();
-  const { signOut, isAuthenticated } = useAuthStore();
+  const { signOut, isAuthenticated, user } = useAuthStore();
+  const userId = user?.uid || 'local_user';
 
   const [autoRestTimer, setAutoRestTimer] = useState(true);
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lb'>('kg');
@@ -44,6 +46,37 @@ export default function SettingsScreen() {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isReseeding, setIsReseeding] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const s = await settingsRepository.getSettings(userId);
+        if (s) {
+          setWeightUnit(s.weight_unit);
+          setDefaultRestSeconds(s.default_rest_seconds);
+          setAutoRestTimer(s.auto_start_rest_timer === 1);
+        }
+      } catch (e) {
+        console.warn('Failed to load settings from SQLite:', e);
+      }
+    }
+    loadSettings();
+  }, [userId]);
+
+  const handleWeightUnitChange = async (unit: 'kg' | 'lb') => {
+    setWeightUnit(unit);
+    await settingsRepository.updateSettings(userId, { weight_unit: unit });
+  };
+
+  const handleRestSecondsChange = async (seconds: number) => {
+    setDefaultRestSeconds(seconds);
+    await settingsRepository.updateSettings(userId, { default_rest_seconds: seconds });
+  };
+
+  const handleAutoRestTimerChange = async (val: boolean) => {
+    setAutoRestTimer(val);
+    await settingsRepository.updateSettings(userId, { auto_start_rest_timer: val ? 1 : 0 });
+  };
 
   const handleReseed = async () => {
     setIsReseeding(true);
@@ -117,12 +150,12 @@ export default function SettingsScreen() {
               <Chip
                 label="KG"
                 selected={weightUnit === 'kg'}
-                onPress={() => setWeightUnit('kg')}
+                onPress={() => handleWeightUnitChange('kg')}
               />
               <Chip
                 label="LB"
                 selected={weightUnit === 'lb'}
-                onPress={() => setWeightUnit('lb')}
+                onPress={() => handleWeightUnitChange('lb')}
               />
             </View>
           </View>
@@ -143,17 +176,17 @@ export default function SettingsScreen() {
               <Chip
                 label="60s"
                 selected={defaultRestSeconds === 60}
-                onPress={() => setDefaultRestSeconds(60)}
+                onPress={() => handleRestSecondsChange(60)}
               />
               <Chip
                 label="90s"
                 selected={defaultRestSeconds === 90}
-                onPress={() => setDefaultRestSeconds(90)}
+                onPress={() => handleRestSecondsChange(90)}
               />
               <Chip
                 label="120s"
                 selected={defaultRestSeconds === 120}
-                onPress={() => setDefaultRestSeconds(120)}
+                onPress={() => handleRestSecondsChange(120)}
               />
             </View>
           </View>
@@ -172,7 +205,7 @@ export default function SettingsScreen() {
             </View>
             <Switch
               value={autoRestTimer}
-              onValueChange={setAutoRestTimer}
+              onValueChange={handleAutoRestTimerChange}
               trackColor={{ false: theme.background.tertiary, true: theme.accent.primary }}
               thumbColor="#0B0D0F"
             />

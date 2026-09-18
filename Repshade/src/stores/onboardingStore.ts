@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import { PREDEFINED_SPLITS, PredefinedWorkout, PredefinedWorkoutExercise } from '../constants/predefinedSplits';
+import { PREDEFINED_SPLITS, PredefinedWorkoutExercise } from '../constants/predefinedSplits';
 import { SYSTEM_EXERCISES } from '../constants/defaultExercises';
 import { exerciseRepository } from '../repositories/exerciseRepository';
 import { splitRepository } from '../repositories/splitRepository';
 import { generateUUID } from '../utils/uuid';
+import { useAuthStore } from './authStore';
+import { useSplitStore } from './splitStore';
 
 export interface OnboardingWorkoutExercise extends PredefinedWorkoutExercise {
   id?: string;
@@ -179,7 +181,11 @@ export const useOnboardingStore = create<OnboardingStoreState>((set, get) => ({
     });
   },
 
-  completeOnboarding: async (userId: string = 'local_user') => {
+  completeOnboarding: async (userId) => {
+    const effectiveUserId =
+      userId && userId !== 'local_user'
+        ? userId
+        : useAuthStore.getState().user?.uid || userId || 'local_user';
     set({ isLoading: true, error: null });
     const { splitName, splitDescription, workouts } = get();
 
@@ -188,7 +194,7 @@ export const useOnboardingStore = create<OnboardingStoreState>((set, get) => ({
       await exerciseRepository.seedSystemExercises(SYSTEM_EXERCISES);
 
       const splitId = await splitRepository.createSplitWithWorkouts(
-        userId,
+        effectiveUserId,
         splitName,
         splitDescription,
         workouts.map((w) => ({
@@ -203,6 +209,10 @@ export const useOnboardingStore = create<OnboardingStoreState>((set, get) => ({
           })),
         }))
       );
+
+      // Load active split into splitStore (which automatically syncs to Firestore)
+      await useSplitStore.getState().loadActiveSplit(effectiveUserId);
+
       set({ isLoading: false });
       return splitId;
     } catch (err: any) {

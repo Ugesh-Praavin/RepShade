@@ -10,8 +10,8 @@ export interface AuthStoreState {
 
   // Actions
   initializeAuth: () => () => void;
-  signIn: (email: string, pass: string) => Promise<void>;
-  signUp: (email: string, pass: string, displayName?: string) => Promise<void>;
+  signIn: (email: string, pass: string) => Promise<AuthUser>;
+  signUp: (email: string, pass: string, displayName?: string) => Promise<AuthUser>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
@@ -45,6 +45,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
     try {
       const user = await authService.signIn(email, pass);
       set({ user, isAuthenticated: true, isLoading: false, error: null });
+      return user;
     } catch (err: any) {
       let message = err?.message || 'Failed to sign in';
       if (err?.code === 'auth/invalid-credential' || err?.code === 'auth/wrong-password') {
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
     try {
       const user = await authService.signUp(email, pass, displayName);
       set({ user, isAuthenticated: true, isLoading: false, error: null });
+      return user;
     } catch (err: any) {
       let message = err?.message || 'Failed to create account';
       if (err?.code === 'auth/email-already-in-use') {

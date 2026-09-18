@@ -10,6 +10,7 @@ import {
 import { auth } from '../../firebase/config';
 import { userRepository } from '../repositories/userRepository';
 import { settingsRepository } from '../repositories/settingsRepository';
+import { syncService } from './syncService';
 
 export interface AuthUser {
   uid: string;
@@ -20,7 +21,7 @@ export interface AuthUser {
 
 export const authService = {
   /**
-   * Listen to Firebase auth state changes and sync to local SQLite
+   * Listen to Firebase auth state changes and sync to local SQLite and Firestore
    */
   subscribeToAuth(callback: (user: AuthUser | null) => void) {
     return onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -45,6 +46,14 @@ export const authService = {
           console.error('Error caching user to local SQLite:', err);
         }
 
+        // Sync to Firestore in background
+        syncService.syncUserProfile(authUser).catch((e) => {
+          console.warn('Background sync user to Firestore error:', e);
+        });
+
+        // Trigger background processing of any pending offline operations
+        syncService.processPendingQueue(authUser.uid).catch(() => {});
+
         callback(authUser);
       } else {
         callback(null);
@@ -53,21 +62,33 @@ export const authService = {
   },
 
   /**
-   * Sign In with Email and Password
+   * Sign In with Email and Password & sync to Firestore
    */
   async signIn(email: string, pass: string): Promise<AuthUser> {
     const cred = await signInWithEmailAndPassword(auth, email.trim(), pass);
     const u = cred.user;
-    return {
+    const authUser: AuthUser = {
       uid: u.uid,
       email: u.email,
       displayName: u.displayName,
       photoURL: u.photoURL,
     };
+
+    // Cache locally & sync to Firestore
+    await userRepository.upsertUser({
+      id: authUser.uid,
+      email: authUser.email || '',
+      displayName: authUser.displayName,
+      photoUrl: authUser.photoURL,
+    });
+    await syncService.syncUserProfile(authUser);
+    syncService.processPendingQueue(authUser.uid).catch(() => {});
+
+    return authUser;
   },
 
   /**
-   * Sign Up with Email, Password, and Display Name
+   * Sign Up with Email, Password, and Display Name & store in Firestore
    */
   async signUp(email: string, pass: string, displayName?: string): Promise<AuthUser> {
     const cred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
@@ -92,6 +113,19 @@ export const authService = {
       photoUrl: authUser.photoURL,
     });
     await settingsRepository.initDefaultSettings(authUser.uid);
+
+    // Save user profile and default settings in Firestore
+    await syncService.syncUserProfile(authUser, { createdAt: Date.now() });
+    await syncService.syncUserSettings(authUser.uid, {
+      weight_unit: 'kg',
+      distance_unit: 'km',
+      auto_start_rest_timer: 1,
+      default_rest_seconds: 90,
+      show_rpe: 1,
+      show_rir: 0,
+      theme: 'dark',
+      workout_reminders_enabled: 1,
+    });
 
     return authUser;
   },

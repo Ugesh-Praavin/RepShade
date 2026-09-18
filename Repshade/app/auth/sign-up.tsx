@@ -15,11 +15,12 @@ import {
 } from '@/components';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAuthStore } from '@/stores/authStore';
+import { otpService } from '@/services/otpService';
 
 export default function SignUpScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
-  const { signUp, isLoading, error, clearError } = useAuthStore();
+  const { signUp, signIn, isLoading, error, clearError } = useAuthStore();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,21 +31,52 @@ export default function SignUpScreen() {
     clearError();
     setLocalError(null);
 
-    if (!email.trim() || !password.trim()) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail || !cleanPassword) {
       setLocalError('Please fill in your email and password.');
       return;
     }
 
-    if (password.length < 6) {
+    if (cleanPassword.length < 6) {
       setLocalError('Password must be at least 6 characters.');
       return;
     }
 
     try {
-      await signUp(email, password, name.trim());
-      router.replace('/(tabs)');
+      let user;
+      try {
+        user = await signUp(cleanEmail, cleanPassword, name.trim());
+      } catch (err: any) {
+        // If account already exists in Firebase Auth (e.g. from previous attempts or unverified registration),
+        // log in and seamlessly proceed to OTP verification!
+        if (err?.code === 'auth/email-already-in-use') {
+          clearError();
+          try {
+            user = await signIn(cleanEmail, cleanPassword);
+          } catch {
+            setLocalError('An account with this email already exists with a different password. Please check your password or sign in below.');
+            return;
+          }
+        } else {
+          throw err;
+        }
+      }
+
+      if (user) {
+        clearError();
+        setLocalError(null);
+        // Send 6-digit OTP code to user's email via Gmail SMTP
+        await otpService.sendOtp(cleanEmail);
+        // Route user to OTP verification screen
+        router.push({
+          pathname: '/auth/verify-otp' as any,
+          params: { email: cleanEmail, userId: user.uid },
+        });
+      }
     } catch {
-      // Handled by authStore
+      // Handled by authStore or local error
     }
   };
 

@@ -1,4 +1,5 @@
 import { queryFirst, execute } from '../database/client';
+import { syncService } from '../services/syncService';
 
 export interface UserSettingsRow {
   user_id: string;
@@ -51,5 +52,10 @@ export const settingsRepository = {
     const values = [...Object.values(updates), Date.now(), userId];
 
     await execute(`UPDATE settings SET ${setClauses} WHERE user_id = ?;`, values as (string | number)[]);
+
+    // Background sync settings to Firestore
+    syncService.syncUserSettings(userId, updates).catch((err) => {
+      console.warn('Background syncUserSettings failed:', err);
+    });
   },
 };

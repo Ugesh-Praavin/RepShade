@@ -12,6 +12,8 @@ import { WorkoutWithExercises, useSplitStore } from './splitStore';
 import { generateUUID } from '../utils/uuid';
 import { execute } from '../database/client';
 import { workoutTimerService } from '../services/workoutTimerService';
+import { useAuthStore } from './authStore';
+import { syncService } from '../services/syncService';
 
 export interface ExerciseSummaryBreakdown {
   exerciseId: string;
@@ -99,13 +101,17 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  startWorkout: async (template, userId = 'local_user') => {
+  startWorkout: async (template, userId) => {
+    const effectiveUserId =
+      userId && userId !== 'local_user'
+        ? userId
+        : useAuthStore.getState().user?.uid || userId || 'local_user';
     set({ isLoading: true, error: null });
     try {
       const now = Date.now();
       const rawExercises = template.exercises || [];
       const { sessionId, sets } = await workoutRepository.startWorkoutSession({
-        userId,
+        userId: effectiveUserId,
         splitId: template.split_id,
         workoutTemplateId: template.id,
         exercises: rawExercises.map((e) => ({
@@ -119,7 +125,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
 
       const session: WorkoutSessionRow = {
         id: sessionId,
-        user_id: userId,
+        user_id: effectiveUserId,
         split_id: template.split_id,
         workout_template_id: template.id,
         started_at: now,
@@ -367,7 +373,11 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
 
     // If activeSession is missing (e.g. app was terminated), recover it from SQLite
     if (!activeSession) {
-      const dbSession = await workoutRepository.getActiveSession('local_user');
+      const currentUserId = useAuthStore.getState().user?.uid || 'local_user';
+      let dbSession = await workoutRepository.getActiveSession(currentUserId);
+      if (!dbSession && currentUserId !== 'local_user') {
+        dbSession = await workoutRepository.getActiveSession('local_user');
+      }
       if (dbSession) {
         activeSession = dbSession;
         sessionSets = await workoutRepository.getSetsForSession(dbSession.id);
@@ -391,6 +401,11 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
       durationSeconds,
     });
 
+    const effectiveUserId =
+      activeSession.user_id && activeSession.user_id !== 'local_user'
+        ? activeSession.user_id
+        : useAuthStore.getState().user?.uid || activeSession.user_id || 'local_user';
+
     // Advance split in SQLite & splitStore
     try {
       await useSplitStore.getState().advanceSplit();
@@ -403,8 +418,9 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
     const splitWorkouts = splitState.workouts;
     const currentSplitIndex = splitState.activeSplit?.current_workout_index || 0;
 
-    // Calculate exercise breakdown
+    // Calculate exercise breakdown and check for personal records
     const breakdown: ExerciseSummaryBreakdown[] = [];
+    const prsAchieved: { exerciseName: string; weight: number; reps: number }[] = [];
     if (activeTemplate) {
       for (const ex of activeTemplate.exercises) {
         const exSets = completedSets.filter((s) => s.workout_exercise_id === ex.id);
@@ -420,6 +436,22 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
               bestR = r;
             }
           }
+
+          let isPR = false;
+          try {
+            const existingPR = await recordRepository.getPRForExercise(effectiveUserId, ex.exercise_id, 'weight');
+            if (bestW > 0 && (!existingPR || bestW > existingPR.value)) {
+              isPR = true;
+              prsAchieved.push({
+                exerciseName: ex.exercise_name || 'Exercise',
+                weight: bestW,
+                reps: bestR,
+              });
+            }
+          } catch (e) {
+            console.warn('Error checking PR for breakdown:', e);
+          }
+
           breakdown.push({
             exerciseId: ex.exercise_id,
             exerciseName: ex.exercise_name || 'Exercise',
@@ -427,6 +459,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
             bestWeight: bestW,
             bestReps: bestR,
             volume: exVol,
+            isPR,
           });
         }
       }
@@ -435,6 +468,7 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
     const summary: WorkoutSummaryInfo = {
       session: {
         ...activeSession,
+        user_id: effectiveUserId,
         status: 'completed',
         completed_at: Date.now(),
         duration_seconds: durationSeconds,
@@ -449,13 +483,18 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
       totalSets: completedSets.length,
       totalReps,
       durationSeconds,
-      prsAchieved: [],
+      prsAchieved,
       breakdown,
       nextWorkoutName: nextWorkout?.name || 'Next Workout',
       nextWorkoutDescription: nextWorkout?.description || '',
       currentSplitIndex,
       totalSplitWorkouts: splitWorkouts.length || 3,
     };
+
+    // Background sync completed workout and sets to Firestore (enqueues offline if network fails)
+    syncService.syncCompletedWorkout(effectiveUserId, summary, completedSets).catch((err) => {
+      console.warn('Background syncCompletedWorkout failed:', err);
+    });
 
     set({
       summaryData: summary,
@@ -494,7 +533,11 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
     });
   },
 
-  checkAndRestoreWorkout: async (userId = 'local_user') => {
+  checkAndRestoreWorkout: async (userId) => {
+    const effectiveUserId =
+      userId && userId !== 'local_user'
+        ? userId
+        : useAuthStore.getState().user?.uid || userId || 'local_user';
     try {
       // 1. Check if user tapped "Stop Timer" on notification while app was in background or closed
       const pending = await workoutTimerService.getPendingCompletedWorkout();
@@ -507,7 +550,10 @@ export const useWorkoutStore = create<WorkoutStoreState>((set, get) => ({
       }
 
       // 2. Check if there's an in_progress session in SQLite
-      const activeSession = await workoutRepository.getActiveSession(userId);
+      let activeSession = await workoutRepository.getActiveSession(effectiveUserId);
+      if (!activeSession && effectiveUserId !== 'local_user') {
+        activeSession = await workoutRepository.getActiveSession('local_user');
+      }
       if (activeSession && activeSession.status === 'in_progress') {
         const sets = await workoutRepository.getSetsForSession(activeSession.id);
         const workouts = await splitRepository.getWorkoutsForSplit(activeSession.split_id);

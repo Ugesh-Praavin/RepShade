@@ -1,5 +1,6 @@
-import { queryAll, queryFirst, execute } from '../database/client';
+import { queryAll, execute } from '../database/client';
 import { generateUUID } from '../utils/uuid';
+import { syncService } from '../services/syncService';
 
 export interface BodyWeightRow {
   id: string;
@@ -47,6 +48,12 @@ export const progressRepository = {
        VALUES (?, ?, ?, ?, ?, ?, ?);`,
       [id, userId, weight, unit, now, now, now]
     );
+
+    // Background sync to Firestore (queues for offline if network is unavailable)
+    syncService.syncBodyWeight(userId, weight, unit, now).catch((err) => {
+      console.warn('Background syncBodyWeight failed:', err);
+    });
+
     return id;
   },
 

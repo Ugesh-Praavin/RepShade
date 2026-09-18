@@ -7,6 +7,8 @@ import {
   WorkoutExerciseRow,
 } from '../repositories/splitRepository';
 import { PREDEFINED_SPLITS } from '../constants/predefinedSplits';
+import { useAuthStore } from './authStore';
+import { syncService } from '../services/syncService';
 
 export interface WorkoutWithExercises extends WorkoutTemplateRow {
   exercises: WorkoutExerciseRow[];
@@ -46,15 +48,22 @@ export const useSplitStore = create<SplitStoreState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  loadActiveSplit: async (userId: string = 'local_user') => {
+  loadActiveSplit: async (userId) => {
+    const effectiveUserId =
+      userId && userId !== 'local_user'
+        ? userId
+        : useAuthStore.getState().user?.uid || userId || 'local_user';
     set({ isLoading: true, error: null });
     try {
-      let split = await splitRepository.getActiveSplit(userId);
+      let split = await splitRepository.getActiveSplit(effectiveUserId);
+      if (!split && effectiveUserId !== 'local_user') {
+        split = await splitRepository.getActiveSplit('local_user');
+      }
 
       // If no active split exists in SQLite, seed default PPL
       if (!split) {
-        await get().seedDefaultSplitIfEmpty(userId);
-        split = await splitRepository.getActiveSplit(userId);
+        await get().seedDefaultSplitIfEmpty(effectiveUserId);
+        split = await splitRepository.getActiveSplit(effectiveUserId);
       }
 
       if (!split) {
@@ -85,15 +94,24 @@ export const useSplitStore = create<SplitStoreState>((set, get) => ({
         nextWorkout: next,
         isLoading: false,
       });
+
+      // Background sync split and workouts to Firestore
+      syncService.syncSplit(effectiveUserId, split, fullWorkouts).catch((err) => {
+        console.warn('Background syncSplit in loadActiveSplit error:', err);
+      });
     } catch (err: any) {
       set({ error: err?.message || 'Failed to load active split', isLoading: false });
     }
   },
 
-  seedDefaultSplitIfEmpty: async (userId: string = 'local_user') => {
+  seedDefaultSplitIfEmpty: async (userId = 'local_user') => {
+    const effectiveUserId =
+      userId && userId !== 'local_user'
+        ? userId
+        : useAuthStore.getState().user?.uid || userId || 'local_user';
     const ppl = PREDEFINED_SPLITS.ppl;
     await splitRepository.createSplitWithWorkouts(
-      userId,
+      effectiveUserId,
       ppl.name,
       ppl.description,
       ppl.workouts.map((w) => ({
@@ -125,12 +143,19 @@ export const useSplitStore = create<SplitStoreState>((set, get) => ({
       result.currentWorkoutIndex
     );
 
+    const updatedSplit = {
+      ...activeSplit,
+      current_workout_index: result.currentWorkoutIndex,
+    };
+
     set({
-      activeSplit: {
-        ...activeSplit,
-        current_workout_index: result.currentWorkoutIndex,
-      },
+      activeSplit: updatedSplit,
       nextWorkout: result.nextWorkout,
+    });
+
+    // Sync updated split state to Firestore
+    syncService.syncSplit(activeSplit.user_id, updatedSplit, workouts).catch((err) => {
+      console.warn('Background syncSplit in advanceSplit error:', err);
     });
   },
 
@@ -149,12 +174,19 @@ export const useSplitStore = create<SplitStoreState>((set, get) => ({
       result.currentWorkoutIndex
     );
 
+    const updatedSplit = {
+      ...activeSplit,
+      current_workout_index: result.currentWorkoutIndex,
+    };
+
     set({
-      activeSplit: {
-        ...activeSplit,
-        current_workout_index: result.currentWorkoutIndex,
-      },
+      activeSplit: updatedSplit,
       nextWorkout: result.nextWorkout,
+    });
+
+    // Sync updated split state to Firestore
+    syncService.syncSplit(activeSplit.user_id, updatedSplit, workouts).catch((err) => {
+      console.warn('Background syncSplit in skipCurrentWorkout error:', err);
     });
   },
 
@@ -169,12 +201,19 @@ export const useSplitStore = create<SplitStoreState>((set, get) => ({
 
     await splitRepository.updateCurrentWorkoutIndex(activeSplit.id, 0);
 
+    const updatedSplit = {
+      ...activeSplit,
+      current_workout_index: 0,
+    };
+
     set({
-      activeSplit: {
-        ...activeSplit,
-        current_workout_index: 0,
-      },
+      activeSplit: updatedSplit,
       nextWorkout: result.nextWorkout,
+    });
+
+    // Sync reset split state to Firestore
+    syncService.syncSplit(activeSplit.user_id, updatedSplit, workouts).catch((err) => {
+      console.warn('Background syncSplit in resetSplit error:', err);
     });
   },
 
